@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../auth/useAuth';
 import { restaurantsApi } from '../../api/restaurants';
 import { sagasApi } from '../../api/sagas';
@@ -179,89 +179,118 @@ export default function Menu() {
           </div>
         )}
 
-        {/* Delivery address */}
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold text-[#1a1a2e]">Delivery Address</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <label htmlFor="street1" className="block text-sm font-medium text-gray-700">
-                Street Address
-              </label>
-              <input
-                id="street1"
-                type="text"
-                required
-                value={street1}
-                onChange={(e) => setStreet1(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[#ff6b35] focus:outline-none focus:ring-1 focus:ring-[#ff6b35]"
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <label htmlFor="street2" className="block text-sm font-medium text-gray-700">
-                Street Address 2 (optional)
-              </label>
-              <input
-                id="street2"
-                type="text"
-                value={street2}
-                onChange={(e) => setStreet2(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[#ff6b35] focus:outline-none focus:ring-1 focus:ring-[#ff6b35]"
-              />
-            </div>
-            <div>
-              <label htmlFor="city" className="block text-sm font-medium text-gray-700">
-                City
-              </label>
-              <input
-                id="city"
-                type="text"
-                required
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[#ff6b35] focus:outline-none focus:ring-1 focus:ring-[#ff6b35]"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="state" className="block text-sm font-medium text-gray-700">
-                  State
-                </label>
-                <input
-                  id="state"
-                  type="text"
-                  required
-                  value={addrState}
-                  onChange={(e) => setAddrState(e.target.value)}
-                  className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[#ff6b35] focus:outline-none focus:ring-1 focus:ring-[#ff6b35]"
-                />
-              </div>
-              <div>
-                <label htmlFor="zip" className="block text-sm font-medium text-gray-700">
-                  ZIP
-                </label>
-                <input
-                  id="zip"
-                  type="text"
-                  required
-                  value={zip}
-                  onChange={(e) => setZip(e.target.value)}
-                  className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[#ff6b35] focus:outline-none focus:ring-1 focus:ring-[#ff6b35]"
-                />
-              </div>
+        {/* Guest user prompt — must register to place orders */}
+        {!user && cart.size > 0 && (
+          <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+            <p className="text-sm font-medium text-amber-800">
+              Sign in to place your order
+            </p>
+            <p className="mt-1 text-sm text-amber-700">
+              You need an account to place orders. Guest users can browse restaurants and menus.
+            </p>
+            <div className="mt-3 flex gap-3">
+              <Link
+                to="/login"
+                className="rounded-lg bg-[#004e89] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#003d6d]"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/register"
+                className="rounded-lg border border-[#ff6b35] px-4 py-2 text-sm font-semibold text-[#ff6b35] transition hover:bg-[#ff6b35] hover:text-white"
+              >
+                Create Account
+              </Link>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Place order button */}
-        <div className="mt-8">
-          <button
-            type="submit"
-            disabled={submitting || cart.size === 0}
-            className="inline-flex items-center rounded-lg bg-[#ff6b35] px-6 py-3 text-sm font-semibold text-white shadow transition hover:bg-[#e55a2b] focus:outline-none focus:ring-2 focus:ring-[#ff6b35] focus:ring-offset-2 disabled:opacity-50"
-          >
-            {submitting ? 'Placing Order...' : 'Place Order'}
-          </button>
-        </div>
+        {/* Delivery address + Place order — only shown for authenticated users */}
+        {user && (
+          <>
+            <div className="mt-8">
+              <h2 className="text-lg font-semibold text-[#1a1a2e]">Delivery Address</h2>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <label htmlFor="street1" className="block text-sm font-medium text-gray-700">
+                    Street Address
+                  </label>
+                  <input
+                    id="street1"
+                    type="text"
+                    required
+                    value={street1}
+                    onChange={(e) => setStreet1(e.target.value)}
+                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[#ff6b35] focus:outline-none focus:ring-1 focus:ring-[#ff6b35]"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label htmlFor="street2" className="block text-sm font-medium text-gray-700">
+                    Street Address 2 (optional)
+                  </label>
+                  <input
+                    id="street2"
+                    type="text"
+                    value={street2}
+                    onChange={(e) => setStreet2(e.target.value)}
+                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[#ff6b35] focus:outline-none focus:ring-1 focus:ring-[#ff6b35]"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+                    City
+                  </label>
+                  <input
+                    id="city"
+                    type="text"
+                    required
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[#ff6b35] focus:outline-none focus:ring-1 focus:ring-[#ff6b35]"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="state" className="block text-sm font-medium text-gray-700">
+                      State
+                    </label>
+                    <input
+                      id="state"
+                      type="text"
+                      required
+                      value={addrState}
+                      onChange={(e) => setAddrState(e.target.value)}
+                      className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[#ff6b35] focus:outline-none focus:ring-1 focus:ring-[#ff6b35]"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="zip" className="block text-sm font-medium text-gray-700">
+                      ZIP
+                    </label>
+                    <input
+                      id="zip"
+                      type="text"
+                      required
+                      value={zip}
+                      onChange={(e) => setZip(e.target.value)}
+                      className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[#ff6b35] focus:outline-none focus:ring-1 focus:ring-[#ff6b35]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <button
+                type="submit"
+                disabled={submitting || cart.size === 0}
+                className="inline-flex items-center rounded-lg bg-[#ff6b35] px-6 py-3 text-sm font-semibold text-white shadow transition hover:bg-[#e55a2b] focus:outline-none focus:ring-2 focus:ring-[#ff6b35] focus:ring-offset-2 disabled:opacity-50"
+              >
+                {submitting ? 'Placing Order...' : 'Place Order'}
+              </button>
+            </div>
+          </>
+        )}
       </form>
     </div>
   );
