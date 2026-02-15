@@ -33,12 +33,14 @@ function Navbar() {
         </Link>
 
         <div className="flex items-center gap-4">
+          {/* Restaurants link always visible — guest browsing */}
+          <Link to="/customer/restaurants" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Restaurants</Link>
+
           {user ? (
             <>
               {user.roles?.includes('ROLE_CUSTOMER') && (
                 <>
                   <Link to="/customer/dashboard" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Dashboard</Link>
-                  <Link to="/customer/restaurants" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Restaurants</Link>
                   <Link to="/customer/orders" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Orders</Link>
                 </>
               )}
@@ -98,10 +100,10 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Customer */}
+        {/* Customer — restaurants & menus are public for guest browsing */}
         <Route path="/customer/dashboard" element={<RequireAuth><CustomerDashboard /></RequireAuth>} />
-        <Route path="/customer/restaurants" element={<RequireAuth><Restaurants /></RequireAuth>} />
-        <Route path="/customer/restaurants/:id/menu" element={<RequireAuth><Menu /></RequireAuth>} />
+        <Route path="/customer/restaurants" element={<Restaurants />} />
+        <Route path="/customer/restaurants/:id/menu" element={<Menu />} />
         <Route path="/customer/orders" element={<RequireAuth><CustomerOrders /></RequireAuth>} />
         <Route path="/customer/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
 
