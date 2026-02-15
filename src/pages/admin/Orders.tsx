@@ -24,7 +24,6 @@ export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
     ordersApi
       .getByState(selectedState, page, 20)
       .then((res) => {
@@ -47,6 +46,7 @@ export default function AdminOrders() {
           <button
             key={s}
             onClick={() => {
+              setLoading(true);
               setSelectedState(s);
               setPage(0);
             }}
@@ -113,7 +113,7 @@ export default function AdminOrders() {
             <div className="mt-4 flex items-center justify-between">
               <button
                 disabled={page === 0}
-                onClick={() => setPage((p) => p - 1)}
+                onClick={() => { setLoading(true); setPage((p) => p - 1); }}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-50"
               >
                 Previous
@@ -123,7 +123,7 @@ export default function AdminOrders() {
               </span>
               <button
                 disabled={page >= totalPages - 1}
-                onClick={() => setPage((p) => p + 1)}
+                onClick={() => { setLoading(true); setPage((p) => p + 1); }}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-50"
               >
                 Next

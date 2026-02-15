@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useAuth } from '../../auth/AuthContext';
+import { useAuth } from '../../auth/useAuth';
 import { ordersApi } from '../../api/orders';
 import StatusBadge from '../../components/StatusBadge';
 import Spinner from '../../components/Spinner';

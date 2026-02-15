@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../auth/AuthContext';
+import { useAuth } from '../../auth/useAuth';
 import { restaurantsApi } from '../../api/restaurants';
 import { sagasApi } from '../../api/sagas';
 import Spinner from '../../components/Spinner';

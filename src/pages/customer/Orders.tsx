@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../auth/AuthContext';
+import { useAuth } from '../../auth/useAuth';
 import { ordersApi } from '../../api/orders';
 import StatusBadge from '../../components/StatusBadge';
 import Spinner from '../../components/Spinner';
@@ -17,7 +17,6 @@ export default function CustomerOrders() {
 
   useEffect(() => {
     if (!user) return;
-    setLoading(true);
     ordersApi
       .getByConsumer(user.userId, page, 10)
       .then((res) => {
@@ -94,7 +93,7 @@ export default function CustomerOrders() {
             <div className="mt-4 flex items-center justify-between">
               <button
                 disabled={page === 0}
-                onClick={() => setPage((p) => p - 1)}
+                onClick={() => { setLoading(true); setPage((p) => p - 1); }}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-50"
               >
                 Previous
@@ -104,7 +103,7 @@ export default function CustomerOrders() {
               </span>
               <button
                 disabled={page >= totalPages - 1}
-                onClick={() => setPage((p) => p + 1)}
+                onClick={() => { setLoading(true); setPage((p) => p + 1); }}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-50"
               >
                 Next
