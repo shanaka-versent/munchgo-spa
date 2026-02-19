@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# MunchGo SPA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite single-page application for the MunchGo food delivery platform. This SPA replaces the monolith Thymeleaf frontend and connects to microservices via an API gateway.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Framework:** React 19 + TypeScript
+- **Build:** Vite
+- **Auth:** Amazon Cognito (JWT)
+- **Hosting:** S3 + CloudFront + WAF
+- **API Gateway:** Kong
 
-## React Compiler
+## Development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev          # Start dev server (http://localhost:5173)
+npm run build        # Production build → dist/
+npm run lint         # ESLint check
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## E2E Tests
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+End-to-end tests use [Playwright](https://playwright.dev/) and run against the live CloudFront deployment.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd e2e
+npm install
+npx playwright install --with-deps chromium
+npx playwright test              # Headless run
+npx playwright test --ui         # Interactive UI mode
+npx playwright show-report       # View HTML report after a run
 ```
+
+Override the target URL with `BASE_URL`:
+
+```bash
+BASE_URL=http://localhost:5173 npx playwright test
+```
+
+## CI/CD Pipeline
+
+The GitHub Actions workflow (`.github/workflows/deploy.yml`) runs three jobs on push to `main`:
+
+| Job | Description |
+|-----|-------------|
+| **Build & Lint** | Install dependencies, lint, build production bundle, upload `dist/` artifact |
+| **Deploy** | Download artifact, sync to S3, invalidate CloudFront cache (requires `production` environment) |
+| **E2E Smoke Tests** | Wait for CloudFront propagation, run Playwright tests, upload report artifact. On failure, auto-creates a GitHub issue with the `e2e-failure` label |
+
+### Required Secrets & Variables
+
+| Name | Type | Description |
+|------|------|-------------|
+| `AWS_ROLE_ARN` | Secret | IAM role ARN for OIDC federation |
+| `AWS_REGION` | Secret | AWS region (e.g. `ap-southeast-2`) |
+| `SPA_BUCKET_NAME` | Secret | S3 bucket name for SPA hosting |
+| `CLOUDFRONT_DISTRIBUTION_ID` | Secret | CloudFront distribution ID for cache invalidation |
+| `CLOUDFRONT_URL` | Variable (optional) | CloudFront URL for e2e tests (falls back to hardcoded default) |
