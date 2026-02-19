@@ -8,7 +8,7 @@ export default defineConfig({
   reporter: [['html', { open: 'never' }], ['list']],
 
   use: {
-    baseURL: process.env.BASE_URL ?? 'http://localhost:5173',
+    baseURL: process.env.BASE_URL ?? 'https://d29r7pgg6vs29b.cloudfront.net',
     viewport: { width: 1280, height: 720 },
     actionTimeout: 10_000,
     navigationTimeout: 15_000,

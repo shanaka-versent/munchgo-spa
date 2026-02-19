@@ -6,7 +6,7 @@ test.describe('Login and Logout', () => {
     await page.goto('/login');
 
     // Branding
-    await expect(page.getByText('MunchGo')).toBeVisible();
+    await expect(page.getByRole('link', { name: /MunchGo/ })).toBeVisible();
     await expect(page.getByText('Sign in to your account')).toBeVisible();
 
     // Form fields (SPA uses email-based login vs monolith username)
@@ -64,11 +64,12 @@ test.describe('Login and Logout', () => {
     await expect(page).toHaveURL(/\/login|\/$/);
 
     // Navbar should show Sign In link
-    await expect(page.getByRole('link', { name: 'Sign In' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Sign In', exact: true })).toBeVisible();
   });
 
   test('unauthenticated user redirected to login', async ({ page }) => {
     // Clear any existing session
+    await page.goto('/');
     await page.evaluate(() => localStorage.clear());
 
     await page.goto('/customer/dashboard');

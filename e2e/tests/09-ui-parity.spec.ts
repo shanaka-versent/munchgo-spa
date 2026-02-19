@@ -73,8 +73,8 @@ test.describe('UI Parity: Register Page', () => {
     await expect(page.getByRole('button', { name: 'Create Account' })).toBeVisible();
 
     // Login link (monolith: "Login here"; SPA: "Sign in")
-    await expect(page.getByRole('link', { name: 'Sign in' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
+    await expect(page.getByRole('link', { name: 'Sign in', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Sign in', exact: true })).toHaveAttribute('href', '/login');
   });
 
   test('restaurant owner fields match monolith', async ({ page }) => {
@@ -119,14 +119,15 @@ test.describe('UI Parity: Navbar', () => {
   });
 
   test('unauthenticated navbar links', async ({ page }) => {
-    await page.evaluate(() => localStorage.clear());
     await page.goto('/');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
 
     // Login link (monolith: "Login"; SPA: "Sign In")
-    await expect(page.getByRole('link', { name: 'Sign In' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Sign In', exact: true })).toBeVisible();
 
     // Register link (monolith: "Register"; SPA: "Get Started")
-    await expect(page.getByRole('link', { name: 'Get Started' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Get Started' }).first()).toBeVisible();
 
     // Authenticated links should NOT be visible
     await expect(page.getByRole('button', { name: 'Logout' })).not.toBeVisible();
@@ -142,7 +143,7 @@ test.describe('UI Parity: Home Page', () => {
 
     // CTA buttons (monolith: Browse Restaurants, Get Started, Login; SPA: Browse Restaurants, Get Started)
     await expect(page.getByRole('link', { name: 'Browse Restaurants' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Get Started' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Get Started' }).first()).toBeVisible();
 
     // Feature section (monolith: Order Food, Manage Restaurant, Deliver Orders;
     // SPA: Fast Delivery, Live Tracking, Secure Payments)
@@ -184,10 +185,10 @@ test.describe('UI Parity: Restaurant Dashboard', () => {
 
     // All workflow states from monolith must be present
     await expect(page.getByText('Pending Approval')).toBeVisible();
-    await expect(page.getByText('Approved')).toBeVisible();
-    await expect(page.getByText('Accepted')).toBeVisible();
-    await expect(page.getByText('Preparing')).toBeVisible();
-    await expect(page.getByText('Ready for Pickup')).toBeVisible();
+    await expect(page.getByText('Approved').first()).toBeVisible();
+    await expect(page.getByText('Accepted').first()).toBeVisible();
+    await expect(page.getByText('Preparing').first()).toBeVisible();
+    await expect(page.getByText('Ready for Pickup').first()).toBeVisible();
 
     // Count badges next to each section
     const countBadges = page.locator('.rounded-full');
@@ -228,10 +229,10 @@ test.describe('UI Parity: Admin Pages', () => {
 
     // Monolith has 5 cards: Consumers, Restaurants, Orders, Couriers, Users
     // SPA has 4 cards (Users managed via Cognito — intentional omission)
-    await expect(page.getByText('Consumers')).toBeVisible();
-    await expect(page.getByText('Restaurants')).toBeVisible();
-    await expect(page.getByText('Orders')).toBeVisible();
-    await expect(page.getByText('Couriers')).toBeVisible();
+    await expect(page.getByText('Consumers').first()).toBeVisible();
+    await expect(page.getByText('Restaurants').first()).toBeVisible();
+    await expect(page.getByText('Orders').first()).toBeVisible();
+    await expect(page.getByText('Couriers').first()).toBeVisible();
 
     // Each card has count + "View All" link (matching monolith)
     const viewAllLinks = page.getByText('View All');

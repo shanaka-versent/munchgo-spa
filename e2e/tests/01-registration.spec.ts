@@ -28,7 +28,7 @@ test.describe('User Registration', () => {
 
     // Login link
     await expect(page.getByText('Already have an account?')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Sign in' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Sign in', exact: true })).toBeVisible();
   });
 
   test('register new customer', async ({ page }) => {

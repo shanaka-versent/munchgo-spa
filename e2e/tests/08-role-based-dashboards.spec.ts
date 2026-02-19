@@ -68,10 +68,10 @@ test.describe('Role-Based Dashboard Routing', () => {
 
     // Workflow sections should be present (matching monolith order state sections)
     await expect(page.getByText('Pending Approval')).toBeVisible();
-    await expect(page.getByText('Approved')).toBeVisible();
-    await expect(page.getByText('Accepted')).toBeVisible();
-    await expect(page.getByText('Preparing')).toBeVisible();
-    await expect(page.getByText('Ready for Pickup')).toBeVisible();
+    await expect(page.getByText('Approved').first()).toBeVisible();
+    await expect(page.getByText('Accepted').first()).toBeVisible();
+    await expect(page.getByText('Preparing').first()).toBeVisible();
+    await expect(page.getByText('Ready for Pickup').first()).toBeVisible();
   });
 
   test('courier can access courier dashboard with correct UI', async ({ page }) => {

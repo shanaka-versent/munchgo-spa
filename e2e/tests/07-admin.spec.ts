@@ -19,10 +19,10 @@ test.describe('Admin Dashboard', () => {
 
     // Should show summary cards (matching monolith: Consumers, Restaurants, Orders, Couriers)
     // Note: Monolith also has a "Users" card — SPA intentionally omits it (users managed via Cognito)
-    await expect(page.getByText('Consumers')).toBeVisible();
-    await expect(page.getByText('Restaurants')).toBeVisible();
-    await expect(page.getByText('Orders')).toBeVisible();
-    await expect(page.getByText('Couriers')).toBeVisible();
+    await expect(page.getByText('Consumers').first()).toBeVisible();
+    await expect(page.getByText('Restaurants').first()).toBeVisible();
+    await expect(page.getByText('Orders').first()).toBeVisible();
+    await expect(page.getByText('Couriers').first()).toBeVisible();
 
     // Each card should have a "View All" link (matching monolith)
     const viewAllLinks = page.getByText('View All');
@@ -40,7 +40,7 @@ test.describe('Admin Dashboard', () => {
     await page.goto('/admin/consumers');
 
     // Page heading
-    await expect(page.getByText('Consumers')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('Consumers').first()).toBeVisible({ timeout: 10_000 });
 
     // Table should be visible
     await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
@@ -57,7 +57,7 @@ test.describe('Admin Dashboard', () => {
     await page.goto('/admin/restaurants');
 
     // Page heading
-    await expect(page.getByText('Restaurants')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('Restaurants').first()).toBeVisible({ timeout: 10_000 });
 
     // Seed restaurant should appear
     await expect(page.getByText('MunchGo Burger Palace')).toBeVisible({ timeout: 10_000 });
@@ -96,7 +96,7 @@ test.describe('Admin Dashboard', () => {
     await page.goto('/admin/couriers');
 
     // Page heading
-    await expect(page.getByText('Couriers')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('Couriers').first()).toBeVisible({ timeout: 10_000 });
 
     // Table should be visible
     await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
