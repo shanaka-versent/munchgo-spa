@@ -26,14 +26,14 @@ test.describe('Browse Restaurants and Menu (Public)', () => {
     await page.reload();
 
     // Public navbar links
-    await expect(page.getByRole('link', { name: 'Restaurants' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Restaurants', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Sign In', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Get Started' }).first()).toBeVisible();
 
     // Authenticated-only links should NOT be visible
     await expect(page.getByRole('button', { name: 'Logout' })).not.toBeVisible();
-    await expect(page.getByRole('link', { name: 'Dashboard' })).not.toBeVisible();
-    await expect(page.getByRole('link', { name: 'Orders' })).not.toBeVisible();
+    await expect(page.getByRole('link', { name: 'Dashboard', exact: true })).not.toBeVisible();
+    await expect(page.getByRole('link', { name: 'Orders', exact: true })).not.toBeVisible();
   });
 
   test('browse restaurants without login', async ({ page }) => {

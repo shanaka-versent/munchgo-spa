@@ -105,11 +105,11 @@ test.describe('UI Parity: Navbar', () => {
     await expect(page.getByRole('link', { name: /MunchGo/ })).toBeVisible();
 
     // Browse link (monolith: "Browse Restaurants"; SPA: "Restaurants")
-    await expect(page.getByRole('link', { name: 'Restaurants' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Restaurants', exact: true })).toBeVisible();
 
     // Customer links (monolith: "My Dashboard", "My Orders"; SPA: "Dashboard", "Orders")
-    await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Orders' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Dashboard', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Orders', exact: true })).toBeVisible();
 
     // User display (monolith shows username; SPA shows email)
     await expect(page.getByText(user.email)).toBeVisible();
