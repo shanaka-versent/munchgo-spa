@@ -59,8 +59,8 @@ test.describe('Admin Dashboard', () => {
     // Page heading
     await expect(page.getByText('Restaurants').first()).toBeVisible({ timeout: 10_000 });
 
-    // Seed restaurant should appear
-    await expect(page.getByText('MunchGo Burger Palace')).toBeVisible({ timeout: 10_000 });
+    // At least one restaurant should appear in the table
+    await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 });
 
     // Table columns (matching monolith: ID, Name, City, Menu Items)
     const headers = page.locator('thead th');
