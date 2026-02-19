@@ -52,7 +52,7 @@ test.describe('Browse Restaurants and Menu (Public)', () => {
     await expect(page.getByRole('link', { name: 'View Menu' }).first()).toBeVisible();
 
     // Restaurant cards should show address and menu item count
-    await expect(page.getByText(/menu item/)).toBeVisible();
+    await expect(page.getByText(/menu item/).first()).toBeVisible();
   });
 
   test('view restaurant menu items with correct table columns', async ({ page }) => {
