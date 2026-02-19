@@ -98,7 +98,7 @@ test.describe('Full Order Lifecycle', () => {
     await expect(delPage.getByText('Courier Dashboard')).toBeVisible({ timeout: 10_000 });
 
     // Verify courier dashboard sections (matching monolith)
-    await expect(delPage.getByText('Available Pickups')).toBeVisible();
+    await expect(delPage.getByRole('heading', { name: 'Available Pickups' })).toBeVisible();
 
     // Courier pickups table columns (matching monolith: Order #, Restaurant, Delivery City/To)
     const pickupHeaders = delPage.locator('thead th');
@@ -112,7 +112,7 @@ test.describe('Full Order Lifecycle', () => {
     await delPage.waitForTimeout(1_000);
 
     // Verify active deliveries section appears
-    await expect(delPage.getByText('My Active Deliveries')).toBeVisible();
+    await expect(delPage.getByRole('heading', { name: 'My Active Deliveries' })).toBeVisible();
 
     // Mark Delivered (matching monolith button text)
     const deliverBtn = delPage.getByRole('button', { name: 'Mark Delivered' }).first();

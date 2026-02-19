@@ -105,9 +105,10 @@ test.describe('Browse Restaurants and Menu (Public)', () => {
     // Should show "Sign in to place your order" prompt
     await expect(page.getByText('Sign in to place your order')).toBeVisible();
 
-    // Guest prompt should have Sign In and Create Account buttons
-    await expect(page.getByRole('link', { name: 'Sign In', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Create Account' })).toBeVisible();
+    // Guest prompt should have Sign In and Create Account buttons (scope to prompt area to avoid navbar collision)
+    const guestPrompt = page.locator('.bg-amber-50');
+    await expect(guestPrompt.getByRole('link', { name: 'Sign In' })).toBeVisible();
+    await expect(guestPrompt.getByRole('link', { name: 'Create Account' })).toBeVisible();
 
     // Order Total should be visible
     await expect(page.getByText('Order Total:')).toBeVisible();

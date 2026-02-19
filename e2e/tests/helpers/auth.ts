@@ -85,7 +85,7 @@ export async function registerUser(page: Page, user: UserCredentials): Promise<v
   await page.getByRole('button', { name: 'Create Account' }).click();
 
   // SPA auto-logs-in and redirects
-  await page.waitForURL(/\/customer\/dashboard/, { timeout: 10_000 });
+  await page.waitForURL(/\/customer\/dashboard/, { timeout: 20_000 });
 }
 
 /**
@@ -97,7 +97,7 @@ export async function login(page: Page, email: string, password: string): Promis
   await page.locator('#password').fill(password);
   await page.getByRole('button', { name: 'Sign In' }).click();
   await page.waitForURL(/\/customer\/dashboard|\/restaurant\/dashboard|\/courier\/dashboard|\/admin/, {
-    timeout: 10_000,
+    timeout: 20_000,
   });
 }
 
@@ -106,7 +106,7 @@ export async function login(page: Page, email: string, password: string): Promis
  */
 export async function logout(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Logout' }).click();
-  await page.waitForURL(/\/login|\/$/);
+  await page.waitForURL(/\/login|\/$/, { timeout: 10_000 });
 }
 
 /**

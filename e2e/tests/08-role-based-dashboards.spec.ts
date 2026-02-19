@@ -82,8 +82,8 @@ test.describe('Role-Based Dashboard Routing', () => {
     await expect(page.getByText('Courier Dashboard')).toBeVisible({ timeout: 10_000 });
 
     // Dashboard sections should be present (matching monolith)
-    await expect(page.getByText('Available Pickups')).toBeVisible();
-    await expect(page.getByText('My Active Deliveries')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Available Pickups' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'My Active Deliveries' })).toBeVisible();
 
     // Empty state messages (matching monolith)
     await expect(page.getByText(/No orders ready for pickup|No orders available/)).toBeVisible();
