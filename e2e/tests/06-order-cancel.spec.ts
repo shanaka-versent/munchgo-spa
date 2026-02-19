@@ -52,13 +52,23 @@ test.describe('Order Cancellation', () => {
     await cancelPage.locator('table tbody tr').first().click();
     await expect(cancelPage).toHaveURL(/\/customer\/orders\/.+/);
 
-    // Cancel button should be visible for APPROVED orders
+    // Verify order detail page has all sections
+    await expect(cancelPage.getByText('Order #')).toBeVisible();
+    await expect(cancelPage.getByText('Order Items')).toBeVisible();
+    await expect(cancelPage.getByText('Delivery Address')).toBeVisible();
+    await expect(cancelPage.getByText('123 Cancel St')).toBeVisible();
+
+    // Cancel button should be visible for APPROVED orders (matching monolith)
+    // Note: SPA also allows cancel for APPROVAL_PENDING (enhancement over monolith)
     const cancelBtn = cancelPage.getByRole('button', { name: 'Cancel Order' });
     await expect(cancelBtn).toBeVisible({ timeout: 5_000 });
     await cancelBtn.click();
 
     // Verify order shows CANCELLED
     await expect(cancelPage.getByText('CANCELLED')).toBeVisible({ timeout: 10_000 });
+
+    // Cancel button should no longer be visible after cancellation
+    await expect(cancelPage.getByRole('button', { name: 'Cancel Order' })).not.toBeVisible();
 
     await cancelPage.close();
   });

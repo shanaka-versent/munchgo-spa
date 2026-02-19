@@ -2,13 +2,46 @@ import { test, expect } from '@playwright/test';
 import { generateUser, registerUser } from './helpers/auth';
 
 test.describe('User Registration', () => {
+  test('register page has correct form elements', async ({ page }) => {
+    await page.goto('/register');
+
+    // Page heading
+    await expect(page.getByText('Create your account')).toBeVisible();
+
+    // Role tabs (SPA uses tabs vs monolith dropdown)
+    await expect(page.getByRole('button', { name: 'Customer' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Restaurant Owner' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Courier' })).toBeVisible();
+
+    // Common form fields
+    await expect(page.locator('#username')).toBeVisible();
+    await expect(page.locator('#reg-email')).toBeVisible();
+    await expect(page.locator('#reg-password')).toBeVisible();
+
+    // Field labels
+    await expect(page.getByText('Username')).toBeVisible();
+    await expect(page.getByText('Email')).toBeVisible();
+    await expect(page.getByText('Password')).toBeVisible();
+
+    // Submit button
+    await expect(page.getByRole('button', { name: 'Create Account' })).toBeVisible();
+
+    // Login link
+    await expect(page.getByText('Already have an account?')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Sign in' })).toBeVisible();
+  });
+
   test('register new customer', async ({ page }) => {
     const user = generateUser('ROLE_CUSTOMER');
     await page.goto('/register');
 
-    // Customer tab is selected by default
+    // Customer tab is selected by default — shows firstName/lastName
     await expect(page.locator('#firstName')).toBeVisible();
     await expect(page.locator('#lastName')).toBeVisible();
+
+    // First Name / Last Name labels
+    await expect(page.getByText('First Name').first()).toBeVisible();
+    await expect(page.getByText('Last Name').first()).toBeVisible();
 
     await registerUser(page, user);
 
@@ -28,6 +61,9 @@ test.describe('User Registration', () => {
     await expect(page.locator('#ownerFirst')).toBeVisible();
     await expect(page.locator('#ownerLast')).toBeVisible();
     await expect(page.locator('#restaurantId')).toBeVisible();
+
+    // Restaurant ID label
+    await expect(page.getByText('Restaurant ID')).toBeVisible();
 
     await registerUser(page, user);
     await expect(page).toHaveURL(/\/customer\/dashboard/);

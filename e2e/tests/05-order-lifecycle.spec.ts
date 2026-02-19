@@ -55,25 +55,34 @@ test.describe('Full Order Lifecycle', () => {
     await restPage.goto('/restaurant/dashboard');
     await expect(restPage.getByText('Restaurant Dashboard')).toBeVisible({ timeout: 10_000 });
 
-    // Approve order
+    // Verify restaurant dashboard has correct workflow sections
+    await expect(restPage.getByText('Pending Approval')).toBeVisible();
+
+    // Restaurant dashboard table columns (matching monolith: Order #, Items, Total, Date, Action)
+    const restHeaders = restPage.locator('thead th');
+    await expect(restHeaders.filter({ hasText: 'Order #' }).first()).toBeVisible();
+    await expect(restHeaders.filter({ hasText: 'Items' }).first()).toBeVisible();
+    await expect(restHeaders.filter({ hasText: 'Total' }).first()).toBeVisible();
+
+    // Approve order (matching monolith button text)
     const approveBtn = restPage.getByRole('button', { name: 'Approve' }).first();
     await expect(approveBtn).toBeVisible({ timeout: 10_000 });
     await approveBtn.click();
     await restPage.waitForTimeout(1_000);
 
-    // Accept order
+    // Accept order (matching monolith button text)
     const acceptBtn = restPage.getByRole('button', { name: 'Accept' }).first();
     await expect(acceptBtn).toBeVisible({ timeout: 10_000 });
     await acceptBtn.click();
     await restPage.waitForTimeout(1_000);
 
-    // Start Preparing
+    // Start Preparing (matching monolith button text)
     const prepBtn = restPage.getByRole('button', { name: 'Start Preparing' }).first();
     await expect(prepBtn).toBeVisible({ timeout: 10_000 });
     await prepBtn.click();
     await restPage.waitForTimeout(1_000);
 
-    // Ready for Pickup
+    // Ready for Pickup (matching monolith button text)
     const readyBtn = restPage.getByRole('button', { name: 'Ready for Pickup' }).first();
     await expect(readyBtn).toBeVisible({ timeout: 10_000 });
     await readyBtn.click();
@@ -88,13 +97,24 @@ test.describe('Full Order Lifecycle', () => {
     await delPage.goto('/courier/dashboard');
     await expect(delPage.getByText('Courier Dashboard')).toBeVisible({ timeout: 10_000 });
 
-    // Pick Up
+    // Verify courier dashboard sections (matching monolith)
+    await expect(delPage.getByText('Available Pickups')).toBeVisible();
+
+    // Courier pickups table columns (matching monolith: Order #, Restaurant, Delivery City/To)
+    const pickupHeaders = delPage.locator('thead th');
+    await expect(pickupHeaders.filter({ hasText: 'Order #' }).first()).toBeVisible();
+    await expect(pickupHeaders.filter({ hasText: 'Restaurant' }).first()).toBeVisible();
+
+    // Pick Up (matching monolith button text)
     const pickupBtn = delPage.getByRole('button', { name: 'Pick Up' }).first();
     await expect(pickupBtn).toBeVisible({ timeout: 10_000 });
     await pickupBtn.click();
     await delPage.waitForTimeout(1_000);
 
-    // Mark Delivered
+    // Verify active deliveries section appears
+    await expect(delPage.getByText('My Active Deliveries')).toBeVisible();
+
+    // Mark Delivered (matching monolith button text)
     const deliverBtn = delPage.getByRole('button', { name: 'Mark Delivered' }).first();
     await expect(deliverBtn).toBeVisible({ timeout: 10_000 });
     await deliverBtn.click();

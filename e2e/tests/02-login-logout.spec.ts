@@ -2,13 +2,27 @@ import { test, expect } from '@playwright/test';
 import { generateUser, registerUser, login, logout } from './helpers/auth';
 
 test.describe('Login and Logout', () => {
-  test('show login page', async ({ page }) => {
+  test('login page has correct form elements', async ({ page }) => {
     await page.goto('/login');
 
+    // Branding
+    await expect(page.getByText('MunchGo')).toBeVisible();
     await expect(page.getByText('Sign in to your account')).toBeVisible();
+
+    // Form fields (SPA uses email-based login vs monolith username)
     await expect(page.locator('#email')).toBeVisible();
     await expect(page.locator('#password')).toBeVisible();
+
+    // Field labels
+    await expect(page.getByText('Email')).toBeVisible();
+    await expect(page.getByText('Password')).toBeVisible();
+
+    // Submit button
     await expect(page.getByRole('button', { name: 'Sign In' })).toBeVisible();
+
+    // Register link
+    await expect(page.getByText("Don't have an account?")).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Create one' })).toBeVisible();
   });
 
   test('login with valid credentials', async ({ page }) => {
@@ -40,6 +54,9 @@ test.describe('Login and Logout', () => {
 
     // User is logged in — navbar should show Logout button
     await expect(page.getByRole('button', { name: 'Logout' })).toBeVisible();
+
+    // Navbar should show user email
+    await expect(page.getByText(user.email)).toBeVisible();
 
     await logout(page);
 
