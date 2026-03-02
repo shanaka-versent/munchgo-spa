@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { generateUser, registerUser, login, logout } from './helpers/auth';
+import { generateUser, registerUser } from './helpers/auth';
 
 test.describe('Role-Based Dashboard Routing', () => {
   test('customer redirected to customer dashboard after login', async ({ page }) => {

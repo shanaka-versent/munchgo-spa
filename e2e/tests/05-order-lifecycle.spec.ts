@@ -1,4 +1,4 @@
-import { test, expect, type Browser } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { generateUser, registerUser, login } from './helpers/auth';
 
 test.describe('Full Order Lifecycle', () => {
