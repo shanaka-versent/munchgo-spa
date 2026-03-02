@@ -39,8 +39,8 @@ test.describe('Admin Dashboard', () => {
   test('view consumers list with correct table columns', async ({ page }) => {
     await page.goto('/admin/consumers');
 
-    // Page heading
-    await expect(page.getByText('Consumers').first()).toBeVisible({ timeout: 10_000 });
+    // Page heading (matching monolith: "All Consumers")
+    await expect(page.getByText('All Consumers').first()).toBeVisible({ timeout: 10_000 });
 
     // Table should be visible
     await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });
@@ -56,8 +56,8 @@ test.describe('Admin Dashboard', () => {
   test('view restaurants list with correct table columns', async ({ page }) => {
     await page.goto('/admin/restaurants');
 
-    // Page heading
-    await expect(page.getByText('Restaurants').first()).toBeVisible({ timeout: 10_000 });
+    // Page heading (matching monolith: "All Restaurants")
+    await expect(page.getByText('All Restaurants').first()).toBeVisible({ timeout: 10_000 });
 
     // At least one restaurant should appear in the table
     await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 });
@@ -82,21 +82,21 @@ test.describe('Admin Dashboard', () => {
     await expect(page.getByRole('button', { name: 'CANCELLED' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'REJECTED' })).toBeVisible();
 
-    // Table columns (matching monolith: ID, Consumer, Restaurant, Total, Status, Date)
+    // Table columns (matching monolith: ID, Consumer, Restaurant, Total, Status, Ordered)
     const headers = page.locator('thead th');
     await expect(headers.filter({ hasText: 'ID' }).first()).toBeVisible();
     await expect(headers.filter({ hasText: 'Consumer' }).first()).toBeVisible();
     await expect(headers.filter({ hasText: 'Restaurant' }).first()).toBeVisible();
     await expect(headers.filter({ hasText: 'Total' }).first()).toBeVisible();
     await expect(headers.filter({ hasText: 'Status' }).first()).toBeVisible();
-    await expect(headers.filter({ hasText: 'Date' }).first()).toBeVisible();
+    await expect(headers.filter({ hasText: 'Ordered' }).first()).toBeVisible();
   });
 
   test('view couriers list with correct table columns', async ({ page }) => {
     await page.goto('/admin/couriers');
 
-    // Page heading
-    await expect(page.getByText('Couriers').first()).toBeVisible({ timeout: 10_000 });
+    // Page heading (matching monolith: "All Couriers")
+    await expect(page.getByText('All Couriers').first()).toBeVisible({ timeout: 10_000 });
 
     // Table should be visible
     await expect(page.locator('table')).toBeVisible({ timeout: 10_000 });

@@ -37,7 +37,7 @@ export default function CustomerOrders() {
 
       {orders.length === 0 ? (
         <div className="mt-12 text-center">
-          <p className="text-gray-500">No orders found.</p>
+          <p className="text-gray-500">You haven&apos;t placed any orders yet.</p>
           <Link
             to="/customer/restaurants"
             className="mt-4 inline-flex items-center rounded-lg bg-[#ff6b35] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#e55a2b]"
@@ -55,7 +55,7 @@ export default function CustomerOrders() {
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Restaurant</th>
                   <th className="px-4 py-3 text-right font-medium text-gray-500">Total</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Status</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">Date</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500">Ordered</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 bg-white">

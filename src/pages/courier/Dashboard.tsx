@@ -87,7 +87,7 @@ export default function CourierDashboard() {
                 <tr>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Order #</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Restaurant</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">Delivery City</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500">Delivery To</th>
                   <th className="px-4 py-3 text-right font-medium text-gray-500">Action</th>
                 </tr>
               </thead>
@@ -138,7 +138,7 @@ export default function CourierDashboard() {
                 <tr>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Order #</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-500">Status</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">Delivery Address</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-500">Deliver To</th>
                   <th className="px-4 py-3 text-right font-medium text-gray-500">Action</th>
                 </tr>
               </thead>

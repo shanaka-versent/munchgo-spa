@@ -268,14 +268,14 @@ test.describe('UI Parity: Admin Pages', () => {
     await page.goto('/admin/orders');
 
     // Monolith columns: ID, Consumer, Restaurant, Total, Status, Created
-    // SPA columns: ID, Consumer, Restaurant, Total, Status, Date (same semantics)
+    // SPA columns: ID, Consumer, Restaurant, Total, Status, Ordered (matching monolith label)
     const headers = page.locator('thead th');
     await expect(headers.filter({ hasText: 'ID' }).first()).toBeVisible({ timeout: 10_000 });
     await expect(headers.filter({ hasText: 'Consumer' }).first()).toBeVisible();
     await expect(headers.filter({ hasText: 'Restaurant' }).first()).toBeVisible();
     await expect(headers.filter({ hasText: 'Total' }).first()).toBeVisible();
     await expect(headers.filter({ hasText: 'Status' }).first()).toBeVisible();
-    await expect(headers.filter({ hasText: 'Date' }).first()).toBeVisible();
+    await expect(headers.filter({ hasText: 'Ordered' }).first()).toBeVisible();
   });
 
   test('admin couriers table columns match monolith', async ({ page }) => {
