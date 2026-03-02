@@ -37,7 +37,7 @@ export default function Login() {
           <h1 className="text-3xl font-extrabold text-[#1a1a2e]">
             Munch<span className="text-[#ff6b35]">Go</span>
           </h1>
-          <p className="mt-1 text-sm text-gray-500">Sign in to your account</p>
+          <p className="mt-1 text-sm text-gray-500">Login</p>
         </div>
 
         {/* Error */}
@@ -84,14 +84,14 @@ export default function Login() {
             disabled={loading}
             className="w-full rounded-lg bg-[#ff6b35] px-4 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-[#e55a2b] focus:outline-none focus:ring-2 focus:ring-[#ff6b35] focus:ring-offset-2 disabled:opacity-50"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Don&apos;t have an account?{' '}
           <Link to="/register" className="font-medium text-[#004e89] hover:underline">
-            Create one
+            Register here
           </Link>
         </p>
       </div>

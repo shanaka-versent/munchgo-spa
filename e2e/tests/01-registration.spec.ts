@@ -6,7 +6,7 @@ test.describe('User Registration', () => {
     await page.goto('/register');
 
     // Page heading
-    await expect(page.getByText('Create your account')).toBeVisible();
+    await expect(page.getByText('Create Account')).toBeVisible();
 
     // Role tabs (SPA uses tabs vs monolith dropdown)
     await expect(page.getByRole('button', { name: 'Customer' })).toBeVisible();
@@ -24,11 +24,11 @@ test.describe('User Registration', () => {
     await expect(page.getByText('Password')).toBeVisible();
 
     // Submit button
-    await expect(page.getByRole('button', { name: 'Create Account' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Register' })).toBeVisible();
 
     // Login link
     await expect(page.getByText('Already have an account?')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Sign in', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Login here', exact: true })).toBeVisible();
   });
 
   test('register new customer', async ({ page }) => {
@@ -101,7 +101,7 @@ test.describe('User Registration', () => {
     if (duplicate.firstName) await page.locator('#firstName').fill(duplicate.firstName);
     if (duplicate.lastName) await page.locator('#lastName').fill(duplicate.lastName);
 
-    await page.getByRole('button', { name: 'Create Account' }).click();
+    await page.getByRole('button', { name: 'Register' }).click();
 
     // Should show error message
     const errorBanner = page.locator('.bg-red-50');

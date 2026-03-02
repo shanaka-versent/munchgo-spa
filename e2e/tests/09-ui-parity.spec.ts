@@ -4,8 +4,8 @@ import { generateUser, registerUser, login } from './helpers/auth';
 /**
  * UI Parity Tests — Monolith vs SPA
  *
- * These tests verify that every key UI element from the monolith Thymeleaf
- * templates has an equivalent in the SPA React implementation.
+ * These tests verify that the SPA React implementation matches the monolith Thymeleaf
+ * templates with aligned labels. The SPA source has been updated to match the monolith's content.
  *
  * Known intentional differences (SPA modernization):
  * - Login uses email instead of username (Cognito)
@@ -23,8 +23,8 @@ test.describe('UI Parity: Login Page', () => {
   test('all login form elements present', async ({ page }) => {
     await page.goto('/login');
 
-    // Heading
-    await expect(page.getByText('Sign in to your account')).toBeVisible();
+    // Heading (now matches monolith: "Login")
+    await expect(page.getByText('Login')).toBeVisible();
 
     // Email field with label (monolith had Username; SPA uses Email for Cognito)
     await expect(page.getByText('Email', { exact: true })).toBeVisible();
@@ -38,12 +38,12 @@ test.describe('UI Parity: Login Page', () => {
     await expect(page.locator('#password')).toHaveAttribute('type', 'password');
     await expect(page.locator('#password')).toHaveAttribute('required', '');
 
-    // Submit button
-    await expect(page.getByRole('button', { name: 'Sign In' })).toBeVisible();
+    // Submit button (now matches monolith: "Login")
+    await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
 
-    // Register link (monolith: "Register here", SPA: "Create one")
-    await expect(page.getByRole('link', { name: 'Create one' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Create one' })).toHaveAttribute('href', '/register');
+    // Register link (now matches monolith: "Register here")
+    await expect(page.getByRole('link', { name: 'Register here' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Register here' })).toHaveAttribute('href', '/register');
   });
 });
 
@@ -51,8 +51,8 @@ test.describe('UI Parity: Register Page', () => {
   test('all register form elements present for customer', async ({ page }) => {
     await page.goto('/register');
 
-    // Heading
-    await expect(page.getByText('Create your account')).toBeVisible();
+    // Heading (now matches monolith: "Create Account")
+    await expect(page.getByText('Create Account')).toBeVisible();
 
     // Role selector (monolith: dropdown; SPA: tabs)
     await expect(page.getByRole('button', { name: 'Customer' })).toBeVisible();
@@ -69,12 +69,12 @@ test.describe('UI Parity: Register Page', () => {
     await expect(page.locator('#firstName')).toBeVisible();
     await expect(page.locator('#lastName')).toBeVisible();
 
-    // Submit button (monolith: "Register"; SPA: "Create Account")
-    await expect(page.getByRole('button', { name: 'Create Account' })).toBeVisible();
+    // Submit button (now matches monolith: "Register")
+    await expect(page.getByRole('button', { name: 'Register' })).toBeVisible();
 
-    // Login link (monolith: "Login here"; SPA: "Sign in")
-    await expect(page.getByRole('link', { name: 'Sign in', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Sign in', exact: true })).toHaveAttribute('href', '/login');
+    // Login link (now matches monolith: "Login here")
+    await expect(page.getByRole('link', { name: 'Login here', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Login here', exact: true })).toHaveAttribute('href', '/login');
   });
 
   test('restaurant owner fields match monolith', async ({ page }) => {
@@ -104,12 +104,12 @@ test.describe('UI Parity: Navbar', () => {
     // Brand (monolith: "MunchGo" → /home; SPA: "MunchGo" → /)
     await expect(page.getByRole('link', { name: /MunchGo/ })).toBeVisible();
 
-    // Browse link (monolith: "Browse Restaurants"; SPA: "Restaurants")
-    await expect(page.getByRole('link', { name: 'Restaurants', exact: true })).toBeVisible();
+    // Browse link (now matches monolith: "Browse Restaurants")
+    await expect(page.getByRole('link', { name: 'Browse Restaurants' })).toBeVisible();
 
-    // Customer links (monolith: "My Dashboard", "My Orders"; SPA: "Dashboard", "Orders")
-    await expect(page.getByRole('link', { name: 'Dashboard', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Orders', exact: true })).toBeVisible();
+    // Customer links (now match monolith: "My Dashboard", "My Orders")
+    await expect(page.getByRole('link', { name: 'My Dashboard', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'My Orders', exact: true })).toBeVisible();
 
     // User display (monolith shows username; SPA shows email)
     await expect(page.getByText(user.email)).toBeVisible();
@@ -123,11 +123,11 @@ test.describe('UI Parity: Navbar', () => {
     await page.evaluate(() => localStorage.clear());
     await page.reload();
 
-    // Login link (monolith: "Login"; SPA: "Sign In")
-    await expect(page.getByRole('link', { name: 'Sign In', exact: true })).toBeVisible();
+    // Login link (now matches monolith: "Login")
+    await expect(page.getByRole('link', { name: 'Login', exact: true })).toBeVisible();
 
-    // Register link (monolith: "Register"; SPA: "Get Started")
-    await expect(page.getByRole('link', { name: 'Get Started' }).first()).toBeVisible();
+    // Register link (now matches monolith: "Register")
+    await expect(page.getByRole('link', { name: 'Register' }).first()).toBeVisible();
 
     // Authenticated links should NOT be visible
     await expect(page.getByRole('button', { name: 'Logout' })).not.toBeVisible();
@@ -141,16 +141,15 @@ test.describe('UI Parity: Home Page', () => {
     // Hero title (monolith: "Welcome to MunchGo"; SPA: "MunchGo")
     await expect(page.locator('h1').filter({ hasText: /MunchGo/ })).toBeVisible();
 
-    // CTA buttons (monolith: Browse Restaurants, Get Started, Login; SPA: Browse Restaurants, Get Started)
+    // CTA buttons (now match monolith: Browse Restaurants, Get Started)
     await expect(page.getByRole('link', { name: 'Browse Restaurants' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Get Started' }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Register' }).first()).toBeVisible();
 
-    // Feature section (monolith: Order Food, Manage Restaurant, Deliver Orders;
-    // SPA: Fast Delivery, Live Tracking, Secure Payments)
-    // Both have 3 feature cards — content differs but concept matches
-    await expect(page.getByText('Fast Delivery')).toBeVisible();
-    await expect(page.getByText('Live Tracking')).toBeVisible();
-    await expect(page.getByText('Secure Payments')).toBeVisible();
+    // Feature section (now matches monolith: Order Food, Manage Restaurant, Deliver Orders)
+    // Previously had Fast Delivery, Live Tracking, Secure Payments — now aligned
+    await expect(page.getByText('Order Food')).toBeVisible();
+    await expect(page.getByText('Manage Restaurant')).toBeVisible();
+    await expect(page.getByText('Deliver Orders')).toBeVisible();
   });
 });
 
@@ -169,9 +168,9 @@ test.describe('UI Parity: Customer Dashboard', () => {
     // Recent Orders section (matching monolith)
     await expect(page.getByText('Recent Orders')).toBeVisible();
 
-    // Quick actions (matching monolith "Browse" + "View Orders" buttons)
+    // Quick actions (now match monolith "Browse" + "View Orders" buttons)
     await expect(page.getByRole('link', { name: 'Browse Restaurants' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'View All Orders' }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: 'View Orders' }).first()).toBeVisible();
   });
 });
 

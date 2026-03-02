@@ -35,21 +35,21 @@ function Navbar() {
 
         <div className="flex items-center gap-4">
           {/* Restaurants link always visible — guest browsing */}
-          <Link to="/customer/restaurants" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Restaurants</Link>
+          <Link to="/customer/restaurants" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Browse Restaurants</Link>
 
           {user ? (
             <>
               {user.roles?.includes('ROLE_CUSTOMER') && (
                 <>
-                  <Link to="/customer/dashboard" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Dashboard</Link>
-                  <Link to="/customer/orders" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Orders</Link>
+                  <Link to="/customer/dashboard" className="text-sm text-gray-600 hover:text-[#1a1a2e]">My Dashboard</Link>
+                  <Link to="/customer/orders" className="text-sm text-gray-600 hover:text-[#1a1a2e]">My Orders</Link>
                 </>
               )}
               {user.roles?.includes('ROLE_RESTAURANT_OWNER') && (
-                <Link to="/restaurant/dashboard" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Restaurant</Link>
+                <Link to="/restaurant/dashboard" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Restaurant Dashboard</Link>
               )}
               {user.roles?.includes('ROLE_COURIER') && (
-                <Link to="/courier/dashboard" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Deliveries</Link>
+                <Link to="/courier/dashboard" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Courier Dashboard</Link>
               )}
               {user.roles?.includes('ROLE_ADMIN') && (
                 <Link to="/admin" className="text-sm text-gray-600 hover:text-[#1a1a2e]">Admin</Link>
@@ -65,13 +65,10 @@ function Navbar() {
           ) : (
             <>
               <Link to="/login" className="text-sm font-medium text-[#004e89] hover:underline">
-                Sign In
+                Login
               </Link>
-              <Link
-                to="/register"
-                className="rounded-lg bg-[#ff6b35] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#e55a2b]"
-              >
-                Get Started
+              <Link to="/register" className="text-sm font-medium text-[#004e89] hover:underline">
+                Register
               </Link>
             </>
           )}

@@ -57,7 +57,7 @@ export default function Register() {
           <h1 className="text-3xl font-extrabold text-[#1a1a2e]">
             Munch<span className="text-[#ff6b35]">Go</span>
           </h1>
-          <p className="mt-1 text-sm text-gray-500">Create your account</p>
+          <p className="mt-1 text-sm text-gray-500">Create Account</p>
         </div>
 
         {/* Role tabs */}
@@ -216,14 +216,14 @@ export default function Register() {
             disabled={loading}
             className="w-full rounded-lg bg-[#ff6b35] px-4 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-[#e55a2b] focus:outline-none focus:ring-2 focus:ring-[#ff6b35] focus:ring-offset-2 disabled:opacity-50"
           >
-            {loading ? 'Creating account...' : 'Create Account'}
+            {loading ? 'Registering...' : 'Register'}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Already have an account?{' '}
           <Link to="/login" className="font-medium text-[#004e89] hover:underline">
-            Sign in
+            Login here
           </Link>
         </p>
       </div>

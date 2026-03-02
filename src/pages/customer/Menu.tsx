@@ -193,13 +193,13 @@ export default function Menu() {
                 to="/login"
                 className="rounded-lg bg-[#004e89] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#003d6d]"
               >
-                Sign In
+                Login
               </Link>
               <Link
                 to="/register"
                 className="rounded-lg border border-[#ff6b35] px-4 py-2 text-sm font-semibold text-[#ff6b35] transition hover:bg-[#ff6b35] hover:text-white"
               >
-                Create Account
+                Register
               </Link>
             </div>
           </div>

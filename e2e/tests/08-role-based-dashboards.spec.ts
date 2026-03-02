@@ -19,7 +19,7 @@ test.describe('Role-Based Dashboard Routing', () => {
 
     // Quick action buttons (matching monolith "Browse" and "View Orders" buttons)
     await expect(page.getByRole('link', { name: 'Browse Restaurants' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'View All Orders' }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: 'View Orders' }).first()).toBeVisible();
   });
 
   test('customer navbar shows correct links', async ({ page }) => {
@@ -27,13 +27,13 @@ test.describe('Role-Based Dashboard Routing', () => {
     await registerUser(page, user);
 
     // Navbar should show customer-specific links (matching monolith: My Dashboard, My Orders)
-    await expect(page.getByRole('link', { name: 'Dashboard', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Orders', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Restaurants', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'My Dashboard', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'My Orders', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Browse Restaurants' })).toBeVisible();
 
     // Should NOT show other role links
-    await expect(page.getByRole('link', { name: 'Restaurant', exact: true })).not.toBeVisible();
-    await expect(page.getByRole('link', { name: 'Deliveries', exact: true })).not.toBeVisible();
+    await expect(page.getByRole('link', { name: 'Restaurant Dashboard' })).not.toBeVisible();
+    await expect(page.getByRole('link', { name: 'Courier Dashboard' })).not.toBeVisible();
     await expect(page.getByRole('link', { name: 'Admin', exact: true })).not.toBeVisible();
 
     // Logout button should be visible
@@ -48,7 +48,7 @@ test.describe('Role-Based Dashboard Routing', () => {
     await registerUser(page, user);
 
     // Navbar should show Restaurant link (matching monolith "Restaurant Dashboard")
-    await expect(page.getByRole('link', { name: 'Restaurant', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Restaurant Dashboard' })).toBeVisible();
   });
 
   test('courier sees deliveries nav link', async ({ page }) => {
@@ -56,7 +56,7 @@ test.describe('Role-Based Dashboard Routing', () => {
     await registerUser(page, user);
 
     // Navbar should show Deliveries link (matching monolith "Courier Dashboard")
-    await expect(page.getByRole('link', { name: 'Deliveries', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Courier Dashboard' })).toBeVisible();
   });
 
   test('restaurant owner can access restaurant dashboard with correct UI', async ({ page }) => {

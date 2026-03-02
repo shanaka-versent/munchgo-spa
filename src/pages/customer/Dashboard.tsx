@@ -37,7 +37,7 @@ export default function CustomerDashboard() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Welcome */}
       <h1 className="text-2xl font-bold text-[#1a1a2e]">
-        Welcome back, {user?.firstName ?? user?.username ?? 'Customer'}
+        Welcome, {user?.firstName ?? user?.username ?? 'Customer'}!
       </h1>
       <p className="mt-1 text-sm text-gray-500">Here is an overview of your orders.</p>
 
@@ -58,7 +58,7 @@ export default function CustomerDashboard() {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-[#1a1a2e]">Recent Orders</h2>
           <Link to="/customer/orders" className="text-sm font-medium text-[#004e89] hover:underline">
-            View All Orders
+            View Orders
           </Link>
         </div>
 
@@ -114,7 +114,7 @@ export default function CustomerDashboard() {
           to="/customer/orders"
           className="inline-flex items-center rounded-lg border border-[#004e89] px-5 py-2.5 text-sm font-semibold text-[#004e89] transition hover:bg-[#004e89] hover:text-white"
         >
-          View All Orders
+          View Orders
         </Link>
       </div>
     </div>

@@ -7,7 +7,7 @@ test.describe('Login and Logout', () => {
 
     // Branding
     await expect(page.getByRole('link', { name: /MunchGo/ })).toBeVisible();
-    await expect(page.getByText('Sign in to your account')).toBeVisible();
+    await expect(page.getByText('Login')).toBeVisible();
 
     // Form fields (SPA uses email-based login vs monolith username)
     await expect(page.locator('#email')).toBeVisible();
@@ -18,11 +18,11 @@ test.describe('Login and Logout', () => {
     await expect(page.getByText('Password')).toBeVisible();
 
     // Submit button
-    await expect(page.getByRole('button', { name: 'Sign In' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
 
     // Register link
     await expect(page.getByText("Don't have an account?")).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Create one' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Register here' })).toBeVisible();
   });
 
   test('login with valid credentials', async ({ page }) => {
@@ -41,7 +41,7 @@ test.describe('Login and Logout', () => {
     await page.goto('/login');
     await page.locator('#email').fill('wrong@munchgo-test.com');
     await page.locator('#password').fill('WrongPassword1!');
-    await page.getByRole('button', { name: 'Sign In' }).click();
+    await page.getByRole('button', { name: 'Login' }).click();
 
     // Should show error
     const errorBanner = page.locator('.bg-red-50');
@@ -63,8 +63,8 @@ test.describe('Login and Logout', () => {
     // Should be redirected to login or home
     await expect(page).toHaveURL(/\/login|\/$/);
 
-    // Navbar should show Sign In link
-    await expect(page.getByRole('link', { name: 'Sign In', exact: true })).toBeVisible();
+    // Navbar should show Login link
+    await expect(page.getByRole('link', { name: 'Login', exact: true })).toBeVisible();
   });
 
   test('unauthenticated user redirected to login', async ({ page }) => {

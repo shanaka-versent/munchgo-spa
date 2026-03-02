@@ -2,6 +2,22 @@
 
 React + TypeScript + Vite single-page application for the MunchGo food delivery platform. This SPA replaces the monolith Thymeleaf frontend and connects to microservices via an API gateway.
 
+## UI Parity with Monolith
+
+The SPA maintains content parity with the monolith Thymeleaf templates. All page headings, button labels, navigation links, feature card titles, and form element text match the monolith exactly. Only styling and technology differ (TailwindCSS vs Bootstrap, React Router vs server-side rendering, JWT vs session auth).
+
+Known intentional differences (driven by the modernised architecture):
+
+- **Login uses email** instead of username (Cognito identity provider)
+- **Register uses role tabs** instead of a dropdown select
+- **SPA auto-logs-in** after registration (no redirect to `/login?registered`)
+- **No "Remember me" checkbox** (JWT-based auth handles persistence)
+- **No admin/users page** (users managed via Cognito console, not DB)
+- **No dedicated 403 page** (RequireAuth redirects to `/login`)
+- **Order cancel** allowed for APPROVAL_PENDING + APPROVED (monolith: APPROVED only)
+
+The E2E test suite includes a dedicated **UI parity test** (`e2e/tests/09-ui-parity.spec.ts`) that validates content alignment across all pages.
+
 ## Tech Stack
 
 - **Framework:** React 19 + TypeScript

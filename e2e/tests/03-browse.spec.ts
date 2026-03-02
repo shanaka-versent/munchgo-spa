@@ -11,13 +11,13 @@ test.describe('Browse Restaurants and Menu (Public)', () => {
     await expect(page.getByRole('link', { name: 'Browse Restaurants' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Get Started' }).first()).toBeVisible();
 
-    // Feature cards (SPA equivalent of monolith feature section)
-    await expect(page.getByText('Fast Delivery')).toBeVisible();
-    await expect(page.getByText('Live Tracking')).toBeVisible();
-    await expect(page.getByText('Secure Payments')).toBeVisible();
+    // Feature cards (matching monolith)
+    await expect(page.getByText('Order Food')).toBeVisible();
+    await expect(page.getByText('Manage Restaurant')).toBeVisible();
+    await expect(page.getByText('Deliver Orders')).toBeVisible();
 
     // Footer
-    await expect(page.getByText(/MunchGo. All rights reserved/)).toBeVisible();
+    await expect(page.getByText(/MunchGo Food Delivery. All rights reserved/)).toBeVisible();
   });
 
   test('navbar shows correct links for unauthenticated user', async ({ page }) => {
@@ -26,14 +26,14 @@ test.describe('Browse Restaurants and Menu (Public)', () => {
     await page.reload();
 
     // Public navbar links
-    await expect(page.getByRole('link', { name: 'Restaurants', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Sign In', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Get Started' }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Browse Restaurants' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Login', exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Register' })).toBeVisible();
 
     // Authenticated-only links should NOT be visible
     await expect(page.getByRole('button', { name: 'Logout' })).not.toBeVisible();
-    await expect(page.getByRole('link', { name: 'Dashboard', exact: true })).not.toBeVisible();
-    await expect(page.getByRole('link', { name: 'Orders', exact: true })).not.toBeVisible();
+    await expect(page.getByRole('link', { name: 'My Dashboard', exact: true })).not.toBeVisible();
+    await expect(page.getByRole('link', { name: 'My Orders', exact: true })).not.toBeVisible();
   });
 
   test('browse restaurants without login', async ({ page }) => {
@@ -102,10 +102,10 @@ test.describe('Browse Restaurants and Menu (Public)', () => {
     // Should show "Sign in to place your order" prompt
     await expect(page.getByText('Sign in to place your order')).toBeVisible();
 
-    // Guest prompt should have Sign In and Create Account buttons (scope to prompt area to avoid navbar collision)
+    // Guest prompt should have Login and Register links (scope to prompt area to avoid navbar collision)
     const guestPrompt = page.locator('.bg-amber-50');
-    await expect(guestPrompt.getByRole('link', { name: 'Sign In' })).toBeVisible();
-    await expect(guestPrompt.getByRole('link', { name: 'Create Account' })).toBeVisible();
+    await expect(guestPrompt.getByRole('link', { name: 'Login' })).toBeVisible();
+    await expect(guestPrompt.getByRole('link', { name: 'Register' })).toBeVisible();
 
     // Order Total should be visible
     await expect(page.getByText('Order Total:')).toBeVisible();
