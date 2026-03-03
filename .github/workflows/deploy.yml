@@ -7,12 +7,20 @@ on:
       - '**.md'
       - 'docs/**'
       - '.github/ISSUE_TEMPLATE/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - '.editorconfig'
+      - '.claude/**'
   pull_request:
     branches: [main]
     paths-ignore:
       - '**.md'
       - 'docs/**'
       - '.github/ISSUE_TEMPLATE/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - '.editorconfig'
+      - '.claude/**'
 
 permissions:
   id-token: write    # OIDC for AWS
