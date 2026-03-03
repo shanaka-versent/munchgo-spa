@@ -8,7 +8,7 @@ test.describe('Browse Restaurants and Menu (Public)', () => {
     await expect(page.getByRole('link', { name: /MunchGo/ })).toBeVisible();
 
     // Hero section
-    await expect(page.getByRole('link', { name: 'Browse Restaurants' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Browse Restaurants' }).first()).toBeVisible();
     await expect(page.getByRole('link', { name: 'Get Started' }).first()).toBeVisible();
 
     // Feature cards (matching monolith)
@@ -26,7 +26,7 @@ test.describe('Browse Restaurants and Menu (Public)', () => {
     await page.reload();
 
     // Public navbar links
-    await expect(page.getByRole('link', { name: 'Browse Restaurants' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Browse Restaurants' }).first()).toBeVisible();
     await expect(page.getByRole('link', { name: 'Login', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Register' })).toBeVisible();
 

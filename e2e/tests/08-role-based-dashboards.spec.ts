@@ -13,12 +13,14 @@ test.describe('Role-Based Dashboard Routing', () => {
     await expect(page.getByText(/Welcome/i)).toBeVisible({ timeout: 10_000 });
 
     // Customer dashboard elements (matching monolith: Browse card + Orders card)
-    await expect(page.getByText('Total Orders')).toBeVisible();
-    await expect(page.getByText('Active Orders')).toBeVisible();
-    await expect(page.getByText('Recent Orders')).toBeVisible();
+    // Use explicit timeouts — cards are hidden behind a spinner while orders API loads
+    await expect(page.getByText('Total Orders')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('Active Orders')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('Recent Orders')).toBeVisible({ timeout: 10_000 });
 
     // Quick action buttons (matching monolith "Browse" and "View Orders" buttons)
-    await expect(page.getByRole('link', { name: 'Browse Restaurants' })).toBeVisible();
+    // .first() avoids strict mode — navbar also has a "Browse Restaurants" link
+    await expect(page.getByRole('link', { name: 'Browse Restaurants' }).first()).toBeVisible();
     await expect(page.getByRole('link', { name: 'View Orders' }).first()).toBeVisible();
   });
 

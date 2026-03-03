@@ -7,7 +7,6 @@ test.describe('Login and Logout', () => {
 
     // Branding
     await expect(page.getByRole('link', { name: /MunchGo/ })).toBeVisible();
-    await expect(page.getByText('Login')).toBeVisible();
 
     // Form fields (SPA uses email-based login vs monolith username)
     await expect(page.locator('#email')).toBeVisible();

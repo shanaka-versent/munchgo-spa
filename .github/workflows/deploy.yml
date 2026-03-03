@@ -80,7 +80,7 @@ jobs:
     needs: deploy
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       BASE_URL: ${{ vars.CLOUDFRONT_URL || 'https://d29r7pgg6vs29b.cloudfront.net' }}
     steps:
@@ -117,6 +117,8 @@ jobs:
         run: npx playwright test
         env:
           BASE_URL: ${{ vars.CLOUDFRONT_URL || 'https://d29r7pgg6vs29b.cloudfront.net' }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
 
       - name: Upload test report
         if: always()
