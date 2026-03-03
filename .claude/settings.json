@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh run list --limit 10)",
+      "Bash(gh run view 22571592145 --log-failed)",
+      "Bash(npm run lint)",
+      "Bash(chmod +x /Users/shanaka/Modernisation/Java-demo/munchgo-spa/node_modules/.bin/eslint)",
+      "Bash(git add e2e/tests/05-order-lifecycle.spec.ts e2e/tests/08-role-based-dashboards.spec.ts)",
+      "Read(//Users/shanaka/Modernisation/Java-demo/**)",
+      "Bash(gh run list --limit 5)",
+      "Bash(gh run view 22602050294 --log-failed)",
+      "Bash(git -C /Users/shanaka/Modernisation/Java-demo/munchgo-spa status e2e/package-lock.json)",
+      "Bash(git add e2e/package-lock.json)",
+      "Bash(gh run list --limit 3)",
+      "Bash(gh run watch 22602260765)",
+      "Bash(gh run view 22602260765 --log)",
+      "Bash(xargs cat)",
+      "Bash(xargs ls -1)",
+      "Bash(gh issue close 3 --reason completed)",
+      "Bash(git checkout issue/3)",
+      "Read(//Users/shanaka/.claude/**)",
+      "Bash(gh pr view 4 --json title,state,body)",
+      "Bash(gh issue view 3 --json state,title)"
+    ],
+    "additionalDirectories": [
+      "/Users/shanaka/.claude",
+      "/Users/shanaka/Modernisation/Java-demo"
+    ]
+  }
+}
