@@ -49,16 +49,16 @@ test.describe('Order Placement (Customer)', () => {
     await registerUser(page, user);
     await placeOrder(page);
 
-    // Page heading
-    await expect(page.getByText('My Orders')).toBeVisible();
+    // Page heading (wait for spinner to clear after API load)
+    await expect(page.getByText('My Orders')).toBeVisible({ timeout: 10_000 });
 
-    // Orders table should have correct columns (matching monolith: Order #, Restaurant, Total, Status, Date)
+    // Orders table should have correct columns (matching monolith: Order #, Restaurant, Total, Status, Ordered)
     const headers = page.locator('thead th');
     await expect(headers.nth(0)).toContainText('Order #');
     await expect(headers.nth(1)).toContainText('Restaurant');
     await expect(headers.nth(2)).toContainText('Total');
     await expect(headers.nth(3)).toContainText('Status');
-    await expect(headers.nth(4)).toContainText('Date');
+    await expect(headers.nth(4)).toContainText('Ordered');
 
     // Orders page should show at least one order
     await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 });
@@ -75,14 +75,14 @@ test.describe('Order Placement (Customer)', () => {
     // Should be on order detail page
     await expect(page).toHaveURL(/\/customer\/orders\/.+/);
 
-    // Order info should be visible
-    await expect(page.getByText('Order #')).toBeVisible();
+    // Order info should be visible (wait for spinner to clear)
+    await expect(page.getByText('Order #')).toBeVisible({ timeout: 10_000 });
 
     // Status badge should be visible
-    await expect(page.getByText(/APPROVAL_PENDING|APPROVED|ACCEPTED/)).toBeVisible();
+    await expect(page.getByText(/APPROVAL_PENDING|APPROVED|ACCEPTED/)).toBeVisible({ timeout: 10_000 });
 
     // Order Items section (matching monolith: Item, Qty, Price, Subtotal columns)
-    await expect(page.getByText('Order Items')).toBeVisible();
+    await expect(page.getByText('Order Items')).toBeVisible({ timeout: 10_000 });
     const itemHeaders = page.locator('thead th');
     await expect(itemHeaders.filter({ hasText: 'Item' })).toBeVisible();
     await expect(itemHeaders.filter({ hasText: 'Qty' })).toBeVisible();
@@ -95,7 +95,7 @@ test.describe('Order Placement (Customer)', () => {
     await expect(page.getByText(/Springfield/)).toBeVisible();
 
     // Cancel button should be visible for APPROVAL_PENDING/APPROVED orders
-    await expect(page.getByRole('button', { name: 'Cancel Order' })).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByRole('button', { name: 'Cancel Order' })).toBeVisible({ timeout: 10_000 });
 
     // Back to orders link
     await expect(page.getByText('Back to orders')).toBeVisible();

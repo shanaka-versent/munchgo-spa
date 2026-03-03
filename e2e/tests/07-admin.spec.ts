@@ -2,10 +2,12 @@ import { test, expect } from '@playwright/test';
 import { generateUser, registerUser, login } from './helpers/auth';
 
 test.describe('Admin Dashboard', () => {
-  // Admin user must be pre-seeded in the system.
-  // Login uses email — update these to match your admin credentials.
-  const ADMIN_EMAIL = 'admin@munchgo.com';
-  const ADMIN_PASSWORD = 'Admin123!';
+  // Admin credentials come from env vars set as GitHub Actions secrets.
+  // Set ADMIN_EMAIL and ADMIN_PASSWORD in your repo's Actions variables to run these tests.
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? '';
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? '';
+
+  test.skip(!ADMIN_EMAIL || !ADMIN_PASSWORD, 'Set ADMIN_EMAIL and ADMIN_PASSWORD env vars to run admin tests');
 
   test.beforeEach(async ({ page }) => {
     await login(page, ADMIN_EMAIL, ADMIN_PASSWORD);
