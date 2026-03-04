@@ -51,17 +51,27 @@ aws s3 sync dist/ "s3://${SPA_BUCKET_NAME}/" \
     --delete \
     --cache-control "public, max-age=31536000, immutable" \
     --exclude "index.html" \
+    --exclude "*/index.html" \
     --exclude "*.json" \
     --region "${AWS_REGION:-ap-southeast-2}"
 echo -e "${GREEN}Assets deployed successfully${NC}"
 echo ""
 
-# Step 2: Deploy index.html with no-cache headers
-echo -e "${YELLOW}Step 2: Deploying index.html (no-cache)${NC}"
+# Step 2: Deploy index.html files with no-cache headers
+echo -e "${YELLOW}Step 2: Deploying index.html files (no-cache)${NC}"
 aws s3 cp dist/index.html "s3://${SPA_BUCKET_NAME}/index.html" \
     --cache-control "no-cache, no-store, must-revalidate" \
     --region "${AWS_REGION:-ap-southeast-2}"
-echo -e "${GREEN}index.html deployed successfully${NC}"
+# Deploy static page index files (e.g. xray-assessment)
+find dist -mindepth 2 -name "index.html" | while read -r file; do
+    relative="${file#dist/}"
+    echo "  Deploying ${relative}..."
+    aws s3 cp "$file" "s3://${SPA_BUCKET_NAME}/${relative}" \
+        --cache-control "no-cache, no-store, must-revalidate" \
+        --content-type "text/html" \
+        --region "${AWS_REGION:-ap-southeast-2}"
+done
+echo -e "${GREEN}All index.html files deployed successfully${NC}"
 echo ""
 
 # Step 3: Invalidate CloudFront cache
