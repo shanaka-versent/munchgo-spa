@@ -78,12 +78,21 @@ jobs:
             --delete \
             --cache-control "public, max-age=31536000, immutable" \
             --exclude "index.html" \
+            --exclude "*/index.html" \
             --exclude "*.json"
 
-      - name: Deploy index.html (no cache)
+      - name: Deploy index.html files (no cache)
         run: |
           aws s3 cp dist/index.html s3://${{ secrets.SPA_BUCKET_NAME }}/index.html \
             --cache-control "no-cache, no-store, must-revalidate"
+          # Deploy static page index files (e.g. xray-assessment)
+          find dist -mindepth 2 -name "index.html" | while read -r file; do
+            relative="${file#dist/}"
+            echo "Deploying ${relative}..."
+            aws s3 cp "$file" "s3://${{ secrets.SPA_BUCKET_NAME }}/${relative}" \
+              --cache-control "no-cache, no-store, must-revalidate" \
+              --content-type "text/html"
+          done
 
       - name: Invalidate CloudFront cache
         run: |

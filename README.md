@@ -26,6 +26,16 @@ The E2E test suite includes a dedicated **UI parity test** (`e2e/tests/09-ui-par
 - **Hosting:** S3 + CloudFront + WAF
 - **API Gateway:** Kong
 
+## Static Pages
+
+The SPA hosts static HTML pages alongside the React app. These are placed in `public/` and served as-is by Vite (dev) and CloudFront (production):
+
+| Path | Description |
+|------|-------------|
+| `/xray-assessment` | App X-Ray Assessment report for the MunchGo monolith — a self-contained interactive HTML document with scoring, Mermaid diagrams, and modernisation recommendations. |
+
+To add more static pages, create a folder under `public/<page-name>/index.html`. The deploy pipeline handles them automatically with no-cache headers.
+
 ## Development
 
 ```bash
