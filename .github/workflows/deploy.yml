@@ -21,6 +21,7 @@ on:
       - 'LICENSE'
       - '.editorconfig'
       - '.claude/**'
+  workflow_dispatch:  # Allow manual/automated triggers (e.g. from 04-deploy-apps.sh)
 
 permissions:
   id-token: write    # OIDC for AWS
@@ -57,7 +58,7 @@ jobs:
   deploy:
     name: Deploy to S3 + CloudFront
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -103,7 +104,7 @@ jobs:
   e2e:
     name: E2E Smoke Tests
     needs: deploy
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
