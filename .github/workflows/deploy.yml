@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      BASE_URL: ${{ vars.CLOUDFRONT_URL || 'https://d29r7pgg6vs29b.cloudfront.net' }}
+      BASE_URL: ${{ vars.CLOUDFRONT_URL || 'https://dcqt91rhtte69.cloudfront.net' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -142,7 +142,7 @@ jobs:
         working-directory: e2e
         run: npx playwright test
         env:
-          BASE_URL: ${{ vars.CLOUDFRONT_URL || 'https://d29r7pgg6vs29b.cloudfront.net' }}
+          BASE_URL: ${{ vars.CLOUDFRONT_URL || 'https://dcqt91rhtte69.cloudfront.net' }}
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
 
