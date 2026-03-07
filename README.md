@@ -1,6 +1,119 @@
 # MunchGo SPA
 
-React + TypeScript + Vite single-page application for the MunchGo food delivery platform. This SPA replaces the monolith Thymeleaf frontend and connects to microservices via an API gateway.
+React 19 + TypeScript + Vite single-page application for the MunchGo food delivery platform. This SPA replaces the monolith's Thymeleaf frontend and connects to 6 microservices via the Kong API Gateway.
+
+## Architecture
+
+```mermaid
+graph LR
+    classDef spa fill:#dbeafe,stroke:#3b82f6,color:#1e40af
+    classDef gw fill:#fef3c7,stroke:#f59e0b,color:#92400e
+    classDef svc fill:#d1fae5,stroke:#10b981,color:#065f46
+    classDef infra fill:#f3e8ff,stroke:#8b5cf6,color:#5b21b6
+
+    Browser["Browser"]:::spa -->|HTTPS| CF["CloudFront + WAF"]:::infra
+    CF -->|Static assets| S3["S3 Bucket"]:::infra
+    CF -->|/api/*| Kong["Kong Gateway\n(OIDC validation)"]:::gw
+    Kong --> Auth["auth-service\n:8086"]:::svc
+    Kong --> Consumer["consumer-service\n:8081"]:::svc
+    Kong --> Restaurant["restaurant-service\n:8082"]:::svc
+    Kong --> Courier["courier-service\n:8083"]:::svc
+    Kong --> Order["order-service\n:8084"]:::svc
+    Kong --> Saga["saga-orchestrator\n:8085"]:::svc
+    Auth --> Cognito["Amazon Cognito"]:::infra
+```
+
+**Traffic path:** Browser → CloudFront + WAF → S3 (static) or Kong (API) → Istio Gateway → Microservices
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | React 19, TypeScript, Vite 7 |
+| **Styling** | Tailwind CSS 4 |
+| **Routing** | React Router 7 |
+| **HTTP Client** | Axios |
+| **Auth** | Amazon Cognito (JWT) — OIDC validated at Kong |
+| **Hosting** | S3 + CloudFront + WAF |
+| **API Gateway** | Kong Cloud Gateway |
+| **E2E Testing** | Playwright (Chromium) |
+| **CI/CD** | GitHub Actions → S3 → CloudFront invalidation |
+
+## Project Structure
+
+```
+munchgo-spa/
+├── src/
+│   ├── api/                  # API client layer (one file per microservice)
+│   │   ├── auth.ts           # Login, register, profile (auth-service)
+│   │   ├── client.ts         # Axios instance with JWT interceptor
+│   │   ├── consumers.ts      # Consumer profiles (consumer-service)
+│   │   ├── couriers.ts       # Courier management (courier-service)
+│   │   ├── orders.ts         # Order CRUD (order-service)
+│   │   ├── restaurants.ts    # Restaurant & menu (restaurant-service)
+│   │   └── sagas.ts          # Order placement saga (saga-orchestrator)
+│   ├── auth/                 # Authentication context & hooks
+│   │   ├── AuthContext.tsx    # AuthProvider — login, register, logout, token refresh
+│   │   ├── context.ts        # React context definition
+│   │   └── useAuth.ts        # useAuth() hook
+│   ├── components/           # Shared UI components
+│   │   ├── OrderTimeline.tsx  # Order state progression visualisation
+│   │   ├── Spinner.tsx        # Loading spinner
+│   │   └── StatusBadge.tsx    # Order status pill badges
+│   ├── config/
+│   │   └── api.ts            # API gateway URL config (VITE_API_GATEWAY_URL)
+│   ├── pages/                # Route-level page components
+│   │   ├── Home.tsx           # Landing page (hero + feature cards)
+│   │   ├── Login.tsx          # Login form (email + password)
+│   │   ├── Register.tsx       # Registration form (role tabs)
+│   │   ├── admin/             # Admin panel (dashboard, consumers, restaurants, orders, couriers)
+│   │   ├── courier/           # Courier dashboard (available pickups, active deliveries)
+│   │   ├── customer/          # Customer pages (dashboard, restaurants, menu, orders, order detail)
+│   │   └── restaurant/        # Restaurant owner dashboard (order workflow states)
+│   ├── types/
+│   │   └── index.ts           # Shared TypeScript interfaces
+│   ├── App.tsx                # Root component — routes, navbar, RequireAuth wrapper
+│   └── main.tsx               # Entry point
+├── public/
+│   └── xray-assessment/       # Static App X-Ray Assessment report
+├── e2e/                       # Playwright E2E test suite
+│   ├── tests/                 # 9 test suites (50 tests)
+│   │   ├── helpers/auth.ts    # Test user generation, register/login helpers
+│   │   └── video/             # 4 video showcase tests for recording
+│   ├── scripts/
+│   │   └── collect-videos.mjs # Collects .webm recordings into demo-videos/
+│   ├── playwright.config.ts       # Main test config (excludes video tests)
+│   └── playwright.video.config.ts # Video recording config (slowMo, only video tests)
+└── .github/workflows/
+    └── deploy.yml             # CI/CD pipeline (build → deploy → E2E)
+```
+
+## Routing
+
+```mermaid
+graph TD
+    classDef pub fill:#dbeafe,stroke:#3b82f6
+    classDef auth fill:#fef3c7,stroke:#f59e0b
+    classDef admin fill:#fee2e2,stroke:#ef4444
+
+    R["/"]:::pub --> Home["Home Page"]
+    R1["/login"]:::pub --> Login["Login"]
+    R2["/register"]:::pub --> Register["Register"]
+    R3["/customer/restaurants"]:::pub --> Restaurants["Browse Restaurants"]
+    R4["/customer/restaurants/:id/menu"]:::pub --> Menu["Restaurant Menu"]
+    R5["/customer/dashboard"]:::auth --> CustDash["Customer Dashboard"]
+    R6["/customer/orders"]:::auth --> Orders["My Orders"]
+    R7["/customer/orders/:id"]:::auth --> Detail["Order Detail"]
+    R8["/restaurant/dashboard"]:::auth --> RestDash["Restaurant Dashboard"]
+    R9["/courier/dashboard"]:::auth --> CourDash["Courier Dashboard"]
+    R10["/admin"]:::admin --> AdminDash["Admin Dashboard"]
+    R11["/admin/consumers"]:::admin --> AdminCon["Consumers Table"]
+    R12["/admin/restaurants"]:::admin --> AdminRes["Restaurants Table"]
+    R13["/admin/orders"]:::admin --> AdminOrd["Orders Table"]
+    R14["/admin/couriers"]:::admin --> AdminCou["Couriers Table"]
+```
+
+**Legend:** Blue = public, Yellow = requires login, Red = admin only
 
 ## UI Parity with Monolith
 
@@ -18,24 +131,6 @@ Known intentional differences (driven by the modernised architecture):
 
 The E2E test suite includes a dedicated **UI parity test** (`e2e/tests/09-ui-parity.spec.ts`) that validates content alignment across all pages.
 
-## Tech Stack
-
-- **Framework:** React 19 + TypeScript
-- **Build:** Vite
-- **Auth:** Amazon Cognito (JWT)
-- **Hosting:** S3 + CloudFront + WAF
-- **API Gateway:** Kong
-
-## Static Pages
-
-The SPA hosts static HTML pages alongside the React app. These are placed in `public/` and served as-is by Vite (dev) and CloudFront (production):
-
-| Path | Description |
-|------|-------------|
-| `/xray-assessment` | App X-Ray Assessment report for the MunchGo monolith — a self-contained interactive HTML document with scoring, Mermaid diagrams, and modernisation recommendations. |
-
-To add more static pages, create a folder under `public/<page-name>/index.html`. The deploy pipeline handles them automatically with no-cache headers.
-
 ## Development
 
 ```bash
@@ -45,13 +140,16 @@ npm run build        # Production build → dist/
 npm run lint         # ESLint check
 ```
 
-## CI/CD & Developer Workflow
+Override the API gateway for local development:
 
-This section explains the automated deployment pipeline, how E2E failures are automatically surfaced as GitHub issues, and the process developers follow to investigate and resolve them.
+```bash
+# .env.development
+VITE_API_GATEWAY_URL=http://localhost:8080
+```
 
-### The Automated CI/CD Pipeline
+## CI/CD Pipeline
 
-Every merge to `main` triggers a three-stage automated pipeline. Pull requests against `main` run only **Build & Lint** — giving fast feedback before any code reaches production.
+Every merge to `main` triggers a three-stage automated pipeline. Pull requests run only **Build & Lint** for fast feedback.
 
 ```mermaid
 flowchart TD
@@ -60,123 +158,150 @@ flowchart TD
     classDef good fill:#d1fae5,stroke:#10b981,color:#065f46
     classDef bad  fill:#fee2e2,stroke:#ef4444,color:#991b1b
 
-    PR["👤 Developer opens Pull Request\nagainst main"]:::dev --> BL_PR
-    BL_PR["🤖 Build & Lint\n(runs on every PR)"]:::bot -->|"✅ Pass"| MERGE
-    BL_PR -->|"❌ Fail"| FIX
-    FIX["👤 Fix errors, re-push to branch"]:::dev --> BL_PR
-    MERGE["👤 Merge PR to main"]:::dev --> BL_MAIN
+    PR["Developer opens PR\nagainst main"]:::dev --> BL_PR
+    BL_PR["Build & Lint\n(every PR)"]:::bot -->|Pass| MERGE
+    BL_PR -->|Fail| FIX
+    FIX["Fix errors, re-push"]:::dev --> BL_PR
+    MERGE["Merge PR to main"]:::dev --> BL_MAIN
 
-    subgraph pipeline ["Production Pipeline — fully automatic after merge"]
-        BL_MAIN["🤖 Build & Lint"]:::bot --> DEPLOY
-        DEPLOY["🤖 Deploy to S3 + CloudFront\nSync assets · Invalidate CDN cache"]:::bot --> CDN
-        CDN["🤖 Wait ~60s for CDN propagation\nVerify site is reachable"]:::bot --> E2E
-        E2E["🤖 E2E Smoke Tests\n50 tests across 9 suites · Chromium"]:::bot
+    subgraph pipeline ["Production Pipeline — automatic after merge"]
+        BL_MAIN["Build & Lint"]:::bot --> DEPLOY
+        DEPLOY["Deploy to S3 + CloudFront\nSync assets + Invalidate CDN"]:::bot --> CDN
+        CDN["Wait ~60s for CDN propagation\nVerify site is reachable"]:::bot --> E2E
+        E2E["E2E Smoke Tests\n50 tests · 9 suites · Chromium"]:::bot
     end
 
-    E2E -->|"✅ All pass"| DONE["✅ Deployment complete\nProduction updated"]:::good
-    E2E -->|"❌ Any fail"| ISSUE
-    ISSUE["🤖 GitHub Issue auto-created\nLabel: e2e-failure\nLinks to run, commit & HTML report"]:::bad --> INVEST
-    INVEST["👤 Developer investigates\nCI logs + Playwright HTML report"]:::dev --> BRANCH
-    BRANCH["👤 Create fix/issue-N branch\nImplement fix · Open PR with Closes #N"]:::dev --> BL_PR
+    E2E -->|All pass| DONE["Deployment complete"]:::good
+    E2E -->|Any fail| ISSUE
+    ISSUE["GitHub Issue auto-created\nLabel: e2e-failure\nLinks to run + HTML report"]:::bad --> INVEST
+    INVEST["Developer investigates\nCI logs + Playwright report"]:::dev --> BRANCH
+    BRANCH["Create fix/issue-N branch\nFix + PR with Closes #N"]:::dev --> BL_PR
 ```
 
-| Step | Runs on | Responsible |
+| Step | Trigger | Responsible |
 |------|---------|-------------|
-| Build & Lint | Every PR + every push to `main` | 🤖 Automatic |
-| Deploy to S3 + CloudFront | Push to `main` only (not PRs) | 🤖 Automatic |
-| Wait for CDN propagation | After deploy | 🤖 Automatic |
-| E2E Smoke Tests | After CDN propagation | 🤖 Automatic |
-| Auto-create GitHub Issue | When any E2E test fails | 🤖 Automatic |
-| Investigate & fix | After issue notification | 👤 Developer |
-| Open Pull Request | After implementing fix | 👤 Developer |
-| Merge PR | After CI passes on PR | 👤 Developer |
-| Close GitHub Issue | After PR merge (via `Closes #N`) | 🤖 Automatic |
+| Build & Lint | Every PR + push to `main` | Automatic |
+| Deploy to S3 + CloudFront | Push to `main` only | Automatic |
+| Wait for CDN propagation | After deploy | Automatic |
+| E2E Smoke Tests | After CDN ready | Automatic |
+| Auto-create GitHub Issue | When any E2E test fails | Automatic |
+| Investigate & fix | After issue notification | Developer |
+| Close GitHub Issue | After fix PR merged (via `Closes #N`) | Automatic |
 
-### How Issues Are Auto-Created
+### Auto-Created Issues on E2E Failure
 
 When any E2E test fails after a production deploy, the pipeline automatically opens a GitHub issue containing:
 
 - Commit SHA and branch that triggered the failure
 - Direct link to the failing workflow run
-- Link to the `playwright-report` artifact (Playwright HTML report + video recordings, retained for 14 days)
+- Link to the `playwright-report` artifact (HTML report + video recordings, retained 14 days)
 - Label `e2e-failure` for easy filtering
-
-You will receive an email notification if you are watching the repository.
 
 ### Developer Fix Workflow
 
-When you receive an `e2e-failure` issue:
+1. **Investigate** — Download the `playwright-report` artifact from the workflow run. Open `index.html` to see failed tests, error messages, screenshots, and video recordings.
 
-1. **Investigate** — Click the workflow run link in the issue body. Download the `playwright-report` artifact and open `index.html` to see exactly which tests failed, the error messages, and video recordings.
+2. **Branch** — `git checkout -b fix/issue-N` from `main`.
 
-2. **Create a branch** — Always branch from `main`:
-   ```bash
-   git checkout main && git pull
-   git checkout -b fix/issue-N
-   ```
+3. **Fix** — Common root causes:
+   - Strict mode violation → scope locator with `.first()`, `getByRole('heading')`, or `getByRole('navigation')`
+   - Assertion timeout → add `{ timeout: 10_000 }` to the assertion
+   - App regression → fix the source code
 
-3. **Implement the fix** — Common root causes:
-   - Strict mode violation: a locator matched multiple elements → add `.first()` or a more specific selector
-   - Assertion timeout: spinner was still visible → add `{ timeout: 10_000 }` to the assertion
-   - App regression: a code change broke behaviour → fix the source code
+4. **PR** — Include `Closes #N` in the PR body. Merge when CI is green.
 
-4. **Open a Pull Request** — Include `Closes #N` in the PR body. GitHub uses this to auto-close the issue on merge.
+5. **Confirm** — The full pipeline re-runs. If E2E passes, the issue auto-closes.
 
-5. **Wait for CI** — Build & Lint runs automatically on your PR branch. Fix any errors before merging.
+## E2E Test Suite
 
-6. **Merge** — Once CI is green, merge the PR. The full production pipeline (Build → Deploy → E2E) re-runs on `main` automatically.
+Tests run against the live CloudFront deployment using Playwright (Chromium). The suite validates registration, login, browsing, ordering, dashboards, admin panel, and UI parity with the monolith.
 
-7. **Confirm** — If all E2E tests pass, the linked issue closes automatically. If tests still fail, a new issue is created for the next cycle.
+```mermaid
+graph LR
+    classDef pass fill:#d1fae5,stroke:#10b981
+    classDef skip fill:#fef3c7,stroke:#f59e0b
+    classDef fail fill:#fee2e2,stroke:#ef4444
 
-### PR & Branch Conventions
+    S1["01 Registration\n6 tests"]:::pass --> S2["02 Login/Logout\n5 tests"]:::pass
+    S2 --> S3["03 Browse\n7 tests"]:::pass
+    S3 --> S4["04 Order Placement\n3 tests"]:::fail
+    S4 --> S5["05 Order Lifecycle\n1 test"]:::skip
+    S5 --> S6["06 Order Cancel\n1 test"]:::skip
+    S6 --> S7["07 Admin\n7 tests"]:::pass
+    S7 --> S8["08 Role Dashboards\n6 tests"]:::pass
+    S8 --> S9["09 UI Parity\n14 tests"]:::pass
+```
 
-| Rule | Detail |
-|------|--------|
-| **Never commit directly to `main`** | Always work in a branch and open a PR |
-| **Branch naming** | `fix/<description>` · `feat/<description>` · `chore/<description>` |
-| **Link issues** | Always include `Closes #N` in the PR body |
-| **Draft PRs** | Use draft status for work in progress; only merge when CI is green |
+| File | Suite | Tests | Status |
+|------|-------|-------|--------|
+| `01-registration.spec.ts` | Customer, owner, courier registration | 6 | Active |
+| `02-login-logout.spec.ts` | Login, logout, invalid credentials | 5 | Active |
+| `03-browse.spec.ts` | Guest browsing, menu, prices, cart prompt | 7 | Active |
+| `04-order-placement.spec.ts` | Place order, view in orders list | 3 | Active* |
+| `05-order-lifecycle.spec.ts` | Owner approval & status progression | 1 | Skipped** |
+| `06-order-cancel.spec.ts` | Customer cancels approved order | 1 | Skipped** |
+| `07-admin.spec.ts` | Admin dashboard, consumers, restaurants, orders, couriers | 7 | Active |
+| `08-role-based-dashboards.spec.ts` | Customer, owner, courier dashboards | 6 | Active |
+| `09-ui-parity.spec.ts` | Content alignment with monolith | 14 | Active |
 
-### E2E Test Suite
-
-Tests run against the live CloudFront deployment using Playwright (Chromium).
-
-| File | Suite | Status |
-|------|-------|--------|
-| `01-registration.spec.ts` | Customer & owner registration | ✅ Active |
-| `02-login-logout.spec.ts` | Login and logout | ✅ Active |
-| `03-browse.spec.ts` | Restaurant and menu browsing | ✅ Active |
-| `04-order-placement.spec.ts` | Full order placement + detail view | ✅ Active |
-| `05-order-lifecycle.spec.ts` | Owner approval & status progression | ⏭ Skipped* |
-| `06-order-cancel.spec.ts` | Customer cancels an approved order | ⏭ Skipped* |
-| `07-admin.spec.ts` | Admin dashboard | ⏭ Skipped** |
-| `08-role-based-dashboards.spec.ts` | Customer / owner / courier dashboards | ✅ Active |
-| `09-ui-parity.spec.ts` | Content parity with monolith | ✅ Active |
-
-> \* Requires a restaurant owner account pre-linked to a seeded restaurant. The current MVP uses `user.userId` as a placeholder `restaurantId` in `RestaurantDashboard.tsx` — new registrations are never linked to seeded restaurants so the Approve button never appears.
+> \* 2 order placement tests may fail due to Kafka consumer-events propagation timing — the saga's `VALIDATE_CONSUMER` step returns 404 when consumer-service hasn't processed the registration event yet. This is a backend timing issue, not a test issue.
 >
-> \*\* Requires `ADMIN_EMAIL` and `ADMIN_PASSWORD` GitHub secrets to be configured. Tests are skipped when these are absent.
+> \*\* Requires a restaurant owner pre-linked to a seeded restaurant. New registrations use a placeholder `restaurantId` and are never linked to seeded restaurants.
 
-To run tests locally against the live deployment:
+### Running Tests Locally
 
 ```bash
 cd e2e
 npm install
 npx playwright install --with-deps chromium
-npx playwright test              # Headless
+
+npx playwright test              # Headless (all 50 tests)
 npx playwright test --ui         # Interactive UI mode
 npx playwright show-report       # View HTML report after a run
-```
 
-Override the target environment:
-
-```bash
+# Override target environment
 BASE_URL=http://localhost:5173 npx playwright test
 ```
 
-### Pipeline Configuration
+### Video Recording
 
-The workflow is defined in `.github/workflows/deploy.yml`. The following GitHub repository secrets and variables must be configured:
+The suite includes 4 video showcase tests that record watchable demonstrations of the full application flow.
+
+```bash
+npm run test:video               # Record showcase videos (with slowMo)
+npm run test:video:headed        # Watch live while recording
+npm run video:collect            # Collect .webm files into demo-videos/
+```
+
+The 4 showcase videos cover:
+
+| # | Video | What it shows |
+|---|-------|--------------|
+| 1 | Home & Guest Browsing | Landing page → features → browse restaurants → menu → guest prompt |
+| 2 | Customer Journey | Register → dashboard → browse → add items → delivery address → place order |
+| 3 | Role Dashboards | Restaurant owner registration + dashboard → courier registration + dashboard |
+| 4 | Admin Panel | Admin login → dashboard cards → consumers → restaurants → orders → couriers |
+
+To merge all recordings into a single video:
+```bash
+ffmpeg -f concat -safe 0 \
+  -i <(for f in demo-videos/*.webm; do echo "file '$(pwd)/$f'"; done) \
+  -c copy demo-videos/munchgo-e2e-showcase.webm
+```
+
+## Static Pages
+
+Static HTML pages in `public/` are served as-is by Vite (dev) and CloudFront (production):
+
+| Path | Description |
+|------|-------------|
+| `/xray-assessment` | App X-Ray Assessment report — interactive HTML with scoring, Mermaid diagrams, and modernisation recommendations |
+
+To add more static pages, create `public/<page-name>/index.html`. The deploy pipeline handles them with no-cache headers.
+
+## Pipeline Configuration
+
+The workflow is defined in `.github/workflows/deploy.yml`. Required GitHub repository secrets and variables:
 
 | Name | Type | Description |
 |------|------|-------------|
@@ -184,6 +309,35 @@ The workflow is defined in `.github/workflows/deploy.yml`. The following GitHub 
 | `AWS_REGION` | Secret | AWS region (e.g. `ap-southeast-2`) |
 | `SPA_BUCKET_NAME` | Secret | S3 bucket name for SPA hosting |
 | `CLOUDFRONT_DISTRIBUTION_ID` | Secret | CloudFront distribution ID for cache invalidation |
-| `ADMIN_EMAIL` | Secret | Email of the admin user for admin E2E tests |
-| `ADMIN_PASSWORD` | Secret | Password of the admin user for admin E2E tests |
-| `CLOUDFRONT_URL` | Variable (optional) | CloudFront URL for E2E tests (falls back to hardcoded default if unset) |
+| `ADMIN_EMAIL` | Secret | Admin user email for E2E tests (`admin@munchgo.com`) |
+| `ADMIN_PASSWORD` | Secret | Admin user password for E2E tests |
+| `CLOUDFRONT_URL` | Variable | CloudFront URL for E2E tests (optional — falls back to hardcoded default) |
+
+### Admin User Seeding
+
+The admin user (`admin@munchgo.com`) must exist in **both** Amazon Cognito **and** the auth-service PostgreSQL database. This is handled by `seed-admin-user.sh` in the infrastructure repo:
+
+```mermaid
+flowchart LR
+    classDef auto fill:#d1fae5,stroke:#10b981
+    classDef manual fill:#fef3c7,stroke:#f59e0b
+
+    TF["terraform apply"]:::auto --> POST["03-post-terraform-setup.sh\n(Kong, ArgoCD, DBs)"]:::auto
+    POST --> DEPLOY["04-deploy-apps.sh\n(CI triggers, ArgoCD sync)"]:::auto
+    DEPLOY --> SEED["seed-admin-user.sh\n(Cognito + auth-service DB)"]:::auto
+    SEED --> E2E["E2E tests use\nADMIN_EMAIL secret"]:::auto
+    GH["Set GitHub secrets\n(one-time manual step)"]:::manual --> E2E
+```
+
+If admin E2E tests are skipping, verify:
+1. `ADMIN_EMAIL` and `ADMIN_PASSWORD` GitHub secrets are set
+2. `seed-admin-user.sh` has been run (creates admin in Cognito + auth-service DB)
+
+## PR & Branch Conventions
+
+| Rule | Detail |
+|------|--------|
+| **Never commit directly to `main`** | Always work in a branch and open a PR |
+| **Branch naming** | `fix/<description>` · `feat/<description>` · `chore/<description>` |
+| **Link issues** | Always include `Closes #N` in the PR body |
+| **Draft PRs** | Use draft status for work in progress; only merge when CI is green |
