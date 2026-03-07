@@ -2,10 +2,15 @@ import { test, expect } from '@playwright/test';
 import { generateUser, registerUser } from './helpers/auth';
 
 test.describe('Order Placement (Customer)', () => {
+  // Saga orchestration requires Kafka event propagation — increase timeout
+  test.setTimeout(60_000);
+
   /**
    * Helper: Navigate to restaurant menu, add items, fill delivery address, place order.
    */
   async function placeOrder(page: import('@playwright/test').Page) {
+    // Wait for Kafka consumer-events to propagate (registration → consumer-service auto-creates consumer)
+    await page.waitForTimeout(3_000);
     await page.goto('/customer/restaurants');
 
     // Click first restaurant menu
@@ -50,7 +55,18 @@ test.describe('Order Placement (Customer)', () => {
     await placeOrder(page);
 
     // Page heading (wait for spinner to clear after API load)
-    await expect(page.getByText('My Orders')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('heading', { name: 'My Orders' })).toBeVisible({ timeout: 10_000 });
+
+    // Wait for saga to complete — poll with page reloads since the order list
+    // is fetched on mount and the saga may not have completed yet
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const hasTable = await page.locator('table tbody tr').first().isVisible().catch(() => false);
+      if (hasTable) break;
+      await page.waitForTimeout(3_000);
+      await page.reload();
+      await expect(page.getByRole('heading', { name: 'My Orders' })).toBeVisible({ timeout: 10_000 });
+    }
+    await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 });
 
     // Orders table should have correct columns (matching monolith: Order #, Restaurant, Total, Status, Ordered)
     const headers = page.locator('thead th');
@@ -59,9 +75,6 @@ test.describe('Order Placement (Customer)', () => {
     await expect(headers.nth(2)).toContainText('Total');
     await expect(headers.nth(3)).toContainText('Status');
     await expect(headers.nth(4)).toContainText('Ordered');
-
-    // Orders page should show at least one order
-    await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 });
   });
 
   test('view order details with all sections', async ({ page }) => {
@@ -69,7 +82,15 @@ test.describe('Order Placement (Customer)', () => {
     await registerUser(page, user);
     await placeOrder(page);
 
-    // Click first order row to view details
+    // Wait for saga to complete — poll with page reloads
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const hasTable = await page.locator('table tbody tr').first().isVisible().catch(() => false);
+      if (hasTable) break;
+      await page.waitForTimeout(3_000);
+      await page.reload();
+      await expect(page.getByRole('heading', { name: 'My Orders' })).toBeVisible({ timeout: 10_000 });
+    }
+    await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 });
     await page.locator('table tbody tr').first().click();
 
     // Should be on order detail page

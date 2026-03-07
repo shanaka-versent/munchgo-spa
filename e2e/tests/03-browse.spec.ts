@@ -25,10 +25,11 @@ test.describe('Browse Restaurants and Menu (Public)', () => {
     await page.evaluate(() => localStorage.clear());
     await page.reload();
 
-    // Public navbar links
-    await expect(page.getByRole('link', { name: 'Browse Restaurants' }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Login', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Register' })).toBeVisible();
+    // Public navbar links (scoped to nav to avoid hero section duplicates)
+    const nav = page.getByRole('navigation');
+    await expect(nav.getByRole('link', { name: 'Browse Restaurants' })).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Login', exact: true })).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Register' })).toBeVisible();
 
     // Authenticated-only links should NOT be visible
     await expect(page.getByRole('button', { name: 'Logout' })).not.toBeVisible();
@@ -42,8 +43,8 @@ test.describe('Browse Restaurants and Menu (Public)', () => {
     await page.evaluate(() => localStorage.clear());
     await page.reload();
 
-    // Page heading
-    await expect(page.getByText('Browse Restaurants')).toBeVisible();
+    // Page heading (scoped to heading to avoid nav link collision)
+    await expect(page.getByRole('heading', { name: 'Browse Restaurants' })).toBeVisible();
 
     // At least one restaurant card with View Menu link should be visible
     await expect(page.getByRole('link', { name: 'View Menu' }).first()).toBeVisible({ timeout: 10_000 });
