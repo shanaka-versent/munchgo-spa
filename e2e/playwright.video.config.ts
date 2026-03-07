@@ -1,18 +1,16 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright config for recording videos of MunchGo E2E tests.
+ * Playwright config for recording showcase videos of MunchGo E2E flows.
  *
- * Records the actual test suite with slowMo for watchable output.
+ * Runs ONLY the tests/video/ showcase tests with slowMo for watchable output.
  *
  * Usage:
- *   npm run test:video                 # record all tests
+ *   npm run test:video                 # record showcase tests
  *   npm run test:video:headed          # watch live while recording
- *   npm run test:video -- tests/video  # record only showcase tests
  */
 export default defineConfig({
-  testDir: './tests',
-  testIgnore: ['**/video/**'],
+  testDir: './tests/video',
   fullyParallel: false,
   workers: 1,
   retries: 0,
@@ -27,7 +25,7 @@ export default defineConfig({
     screenshot: 'on',
     trace: 'on',
     launchOptions: {
-      slowMo: 500,
+      slowMo: 300,
     },
   },
 
