@@ -9,7 +9,10 @@
     "test:ui:host": "npx playwright test --ui --ui-host=0.0.0.0",
     "test:debug": "npx playwright test --debug",
     "report": "npx playwright show-report --host 0.0.0.0",
-    "report:open": "npx playwright show-report"
+    "report:open": "npx playwright show-report",
+    "test:video": "npx playwright test --config playwright.video.config.ts",
+    "test:video:headed": "npx playwright test --config playwright.video.config.ts --headed",
+    "video:collect": "node scripts/collect-videos.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0"

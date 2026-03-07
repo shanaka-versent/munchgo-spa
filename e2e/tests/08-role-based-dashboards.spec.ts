@@ -66,7 +66,7 @@ test.describe('Role-Based Dashboard Routing', () => {
     await registerUser(page, user);
 
     await page.goto('/restaurant/dashboard');
-    await expect(page.getByText('Restaurant Dashboard')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('heading', { name: 'Restaurant Dashboard' })).toBeVisible({ timeout: 10_000 });
 
     // Workflow sections should be present (matching monolith order state sections)
     await expect(page.getByText('Pending Approval')).toBeVisible();
@@ -81,7 +81,7 @@ test.describe('Role-Based Dashboard Routing', () => {
     await registerUser(page, user);
 
     await page.goto('/courier/dashboard');
-    await expect(page.getByText('Courier Dashboard')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('heading', { name: 'Courier Dashboard' })).toBeVisible({ timeout: 10_000 });
 
     // Dashboard sections should be present (matching monolith)
     await expect(page.getByRole('heading', { name: 'Available Pickups' })).toBeVisible();
