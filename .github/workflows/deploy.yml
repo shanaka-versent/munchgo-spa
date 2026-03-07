@@ -62,6 +62,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
+      - name: Check AWS stack is active
+        if: vars.STACK_STATUS == 'DESTROYED'
+        run: |
+          echo "::error::AWS stack is not active (STACK_STATUS=DESTROYED)."
+          echo "Run the infrastructure setup scripts before deploying:"
+          echo "  cd munchgo-aws-iac && terraform apply && ./scripts/03-post-terraform-setup.sh"
+          exit 1
+
       - uses: actions/download-artifact@v4
         with:
           name: dist
